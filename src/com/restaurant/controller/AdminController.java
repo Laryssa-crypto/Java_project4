@@ -22,6 +22,7 @@ public class AdminController {
         this.adminView = view;
     }
 
+    // Charge tous les utilisateurs dans la vue
     public void chargerUtilisateurs() {
         try {
             List<Utilisateur> utilisateurs = utilisateurDAO.findAll();
@@ -33,6 +34,7 @@ public class AdminController {
         }
     }
 
+    // Ajoute un nouvel utilisateur avec mot de passe haché
     public void ajouterUtilisateur(String nom, String rawMdp, Role role) {
         try {
             if (utilisateurDAO.findByNom(nom) != null) {
@@ -52,13 +54,14 @@ public class AdminController {
         }
     }
 
+    // Modifie un utilisateur (met à jour le mot de passe seulement si fourni)
     public void modifierUtilisateur(int idUtil, String nom, String rawMdp, Role role) {
         try {
             Utilisateur u = new Utilisateur();
             u.setIdUtil(idUtil);
             u.setNomUtil(nom);
             u.setRole(role);
-            
+
             if (rawMdp == null || rawMdp.trim().isEmpty()) {
                 List<Utilisateur> all = utilisateurDAO.findAll();
                 for (Utilisateur existing : all) {
@@ -70,7 +73,7 @@ public class AdminController {
             } else {
                 u.setMdp(PasswordUtils.hashPassword(rawMdp));
             }
-            
+
             if (utilisateurDAO.update(u)) {
                 if (adminView != null) {
                     adminView.afficherMessage("Utilisateur modifié avec succès.");
@@ -84,6 +87,7 @@ public class AdminController {
         }
     }
 
+    // Supprime un utilisateur par son ID
     public void supprimerUtilisateur(int idUtil) {
         try {
             if (utilisateurDAO.delete(idUtil)) {

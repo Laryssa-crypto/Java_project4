@@ -15,6 +15,7 @@ public class CategorieService {
         this.categorieDAO = categorieDAO;
     }
 
+    // Ajoute une nouvelle catégorie de produits
     public boolean ajouterCategorie(String libelle) {
         if (libelle == null || libelle.trim().isEmpty()) {
             logger.warn("Le libellé ne peut pas être vide");

@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 
 public class PrintService {
 
+    // Imprime le reçu de vente pour le client (format ticket)
     public static void imprimerRecuClient(Commande commande, List<LigneCommande> lignes) {
         PrinterJob printJob = PrinterJob.getPrinterJob();
         printJob.setPrintable(new Printable() {
@@ -62,6 +63,7 @@ public class PrintService {
         }
     }
 
+    // Imprime le reçu détaillé pour la gestion interne
     public static void imprimerRecuGestion(Commande commande, List<LigneCommande> lignes) {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPrintable(new Printable() {

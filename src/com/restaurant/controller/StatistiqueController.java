@@ -25,6 +25,7 @@ public class StatistiqueController {
         this.statistiqueView = view;
     }
 
+    // Rafraîchit toutes les statistiques du tableau de bord
     public void rafraichirToutesStatistiques() {
         javax.swing.SwingWorker<Void, Void> worker = new javax.swing.SwingWorker<Void, Void>() {
             StatistiquesGenerales stats;
@@ -162,6 +163,7 @@ public class StatistiqueController {
             statistiqueView.afficherErreur(msg);
     }
 
+    // Imprime le résumé des statistiques globales
     public void imprimerStatistiques() {
         try {
             StatistiquesGenerales stats = statistiqueService.getStatistiquesGenerales();
@@ -171,6 +173,7 @@ public class StatistiqueController {
         }
     }
 
+    // Exporte les statistiques actuelles au format CSV
     public void exporterCSVStatistiques(String destPath) {
         try {
             LocalDate debutMois = LocalDate.now().withDayOfMonth(1);

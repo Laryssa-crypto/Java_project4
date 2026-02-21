@@ -18,19 +18,21 @@ public class StockController {
 
     public StockController(StockView view) {
         this.view = view;
-        ProduitDAO pDao       = new ProduitDAO();
+        ProduitDAO pDao = new ProduitDAO();
         MouvementStockDAO mDao = new MouvementStockDAO();
         this.service = new StockService(pDao, mDao);
     }
 
+    // Enregistre une entrée ou sortie de stock depuis la vue
     public void enregistrerMouvement() {
         int qte;
         try {
             qte = Integer.parseInt(view.getQuantiteSaisie());
-            if (qte <= 0) throw new NumberFormatException();
+            if (qte <= 0)
+                throw new NumberFormatException();
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(view, "La quantité doit être un entier > 0",
-                "Saisie invalide", JOptionPane.WARNING_MESSAGE);
+                    "Saisie invalide", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -47,10 +49,10 @@ public class StockController {
             Produit p = mvt.getProduit();
             if (p.getStockActu() == 0) {
                 JOptionPane.showMessageDialog(view, "RUPTURE : " + p.getNomPro() + " est en rupture de stock !",
-                    "Rupture de stock", JOptionPane.ERROR_MESSAGE);
+                        "Rupture de stock", JOptionPane.ERROR_MESSAGE);
             } else if (p.isSousSeuilAlerte()) {
                 JOptionPane.showMessageDialog(view, "Stock faible : " + p.getNomPro() + " (" + p.getStockActu() + ")",
-                    "Seuil d'alerte", JOptionPane.WARNING_MESSAGE);
+                        "Seuil d'alerte", JOptionPane.WARNING_MESSAGE);
             }
 
             JOptionPane.showMessageDialog(view, "Mouvement enregistré avec succès !");

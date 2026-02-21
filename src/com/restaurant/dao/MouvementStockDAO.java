@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 public class MouvementStockDAO {
     private static final Logger logger = LogManager.getLogger(MouvementStockDAO.class);
 
+    // Enregistre un nouveau mouvement de stock
     public boolean ajouter(MouvementStock mvt) {
         String sql = "INSERT INTO MVT_STOCK (id_pro, TYPE, qte_stock, DATE, motif) VALUES (?, ?, ?, ?, ?)";
         Connection conn = ConnectionDB.getConnection();
@@ -35,6 +36,7 @@ public class MouvementStockDAO {
         return false;
     }
 
+    // Récupère l'historique chronologique des mouvements
     public List<MouvementStock> listerHistorique() {
         List<MouvementStock> liste = new ArrayList<>();
         String sql = "SELECT m.*, p.nom_pro FROM MVT_STOCK m " +

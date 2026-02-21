@@ -30,6 +30,7 @@ public class CommandeDAO {
         return c;
     }
 
+    // Crée une nouvelle commande et retourne son ID
     public int create(Commande commande) throws SQLException {
         String sql = "INSERT INTO COMMANDE (date, etat, total, nom_util) VALUES (NOW(), ?, ?, ?)";
         Connection conn = ConnectionDB.getConnection();
@@ -75,6 +76,7 @@ public class CommandeDAO {
         return commandes;
     }
 
+    // Met à jour l'état, le total et l'utilisateur d'une commande
     public boolean update(Commande commande) throws SQLException {
         String sql = "UPDATE COMMANDE SET etat=?, total=?, nom_util=? WHERE id_cmde=?";
         Connection conn = ConnectionDB.getConnection();
@@ -98,6 +100,7 @@ public class CommandeDAO {
         return ok;
     }
 
+    // Supprime les commandes en cours sans montant (vides)
     public int deleteEmptyOrders() throws SQLException {
         String sql = "DELETE FROM COMMANDE WHERE etat = 'EN_COURS' AND total = 0";
         Connection conn = ConnectionDB.getConnection();
@@ -121,6 +124,7 @@ public class CommandeDAO {
         return commandes;
     }
 
+    // Récupère les commandes sur une période donnée
     public List<Commande> findByPeriode(LocalDate debut, LocalDate fin) throws SQLException {
         List<Commande> commandes = new ArrayList<>();
         // Utiliser DATE() pour extraire uniquement la partie date afin que la

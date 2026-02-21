@@ -32,10 +32,12 @@ public class LoginController {
         }
     }
 
+    // Affiche la fenêtre de connexion
     public void afficherLogin() {
         loginView.setVisible(true);
     }
 
+    // Tente l'authentification et ouvre la vue principale
     public boolean seConnecter(String nomUtil, String motDePasse) {
         try {
             if (nomUtil.isEmpty()) {
@@ -74,6 +76,7 @@ public class LoginController {
         }
     }
 
+    // Crée un nouveau compte utilisateur (auto-inscription)
     public boolean creerCompte(String nomUtil, String motDePasse, String confirmation) {
         try {
             if (nomUtil.isEmpty()) {

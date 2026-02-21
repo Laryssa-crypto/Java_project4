@@ -21,6 +21,7 @@ public class LigneCommandeDAO {
         return ligne;
     }
 
+    // Crée une nouvelle ligne de commande
     public int create(LigneCommande ligne) throws SQLException {
         String sql = "INSERT INTO LIG_COMMANDE (id_cmde, id_pro, qte_lig, prix_unit) VALUES (?, ?, ?, ?)";
         Connection conn = ConnectionDB.getConnection();
@@ -105,6 +106,7 @@ public class LigneCommandeDAO {
         return ok;
     }
 
+    // Calcule le montant total des lignes d'une commande
     public double calculerTotalCommande(int idCommande) throws SQLException {
         String sql = "SELECT SUM(montant) FROM LIG_COMMANDE WHERE id_cmde = ?";
         Connection conn = ConnectionDB.getConnection();

@@ -3,9 +3,7 @@ package com.restaurant.model;
 import com.restaurant.model.enums.EtatCommande;
 import java.time.LocalDateTime;
 
-/**
- * Classe représentant une commande client
- */
+// Représente une commande client et son état global
 public class Commande {
     private int idCmde;
     private LocalDateTime date;

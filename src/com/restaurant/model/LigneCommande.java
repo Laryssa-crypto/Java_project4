@@ -1,8 +1,6 @@
 package com.restaurant.model;
 
-/**
- * Classe représentant une ligne de commande
- */
+// Représente un article spécifique au sein d'une commande
 public class LigneCommande {
     private int idLig;
     private int idCmde;
@@ -10,11 +8,12 @@ public class LigneCommande {
     private int qteLig;
     private double prixUnit;
     private double montant;
-    
+
     private Produit produit;
-    
-    public LigneCommande() {}
-    
+
+    public LigneCommande() {
+    }
+
     public LigneCommande(int idLig, int idCmde, int idPro, int qteLig, double prixUnit) {
         this.idLig = idLig;
         this.idCmde = idCmde;
@@ -23,7 +22,7 @@ public class LigneCommande {
         this.prixUnit = prixUnit;
         this.montant = qteLig * prixUnit;
     }
-    
+
     public LigneCommande(int idCmde, int idPro, int qteLig, double prixUnit) {
         this.idCmde = idCmde;
         this.idPro = idPro;
@@ -31,7 +30,7 @@ public class LigneCommande {
         this.prixUnit = prixUnit;
         this.montant = qteLig * prixUnit;
     }
-    
+
     public LigneCommande(Produit produit, int quantite) {
         this.produit = produit;
         this.idPro = produit.getIdPro();
@@ -39,61 +38,61 @@ public class LigneCommande {
         this.prixUnit = produit.getPrixVente();
         this.montant = quantite * prixUnit;
     }
-    
+
     public int getIdLig() {
         return idLig;
     }
-    
+
     public void setIdLig(int idLig) {
         this.idLig = idLig;
     }
-    
+
     public int getIdCmde() {
         return idCmde;
     }
-    
+
     public void setIdCmde(int idCmde) {
         this.idCmde = idCmde;
     }
-    
+
     public int getIdPro() {
         return idPro;
     }
-    
+
     public void setIdPro(int idPro) {
         this.idPro = idPro;
     }
-    
+
     public int getQteLig() {
         return qteLig;
     }
-    
+
     public void setQteLig(int qteLig) {
         this.qteLig = qteLig;
         calculerMontant();
     }
-    
+
     public double getPrixUnit() {
         return prixUnit;
     }
-    
+
     public void setPrixUnit(double prixUnit) {
         this.prixUnit = prixUnit;
         calculerMontant();
     }
-    
+
     public double getMontant() {
         return montant;
     }
-    
+
     public void setMontant(double montant) {
         this.montant = montant;
     }
-    
+
     public Produit getProduit() {
         return produit;
     }
-    
+
     public void setProduit(Produit produit) {
         this.produit = produit;
         if (produit != null) {
@@ -102,11 +101,11 @@ public class LigneCommande {
             calculerMontant();
         }
     }
-    
+
     private void calculerMontant() {
         this.montant = this.qteLig * this.prixUnit;
     }
-    
+
     @Override
     public String toString() {
         if (produit != null) {

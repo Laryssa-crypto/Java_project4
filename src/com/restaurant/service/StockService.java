@@ -18,10 +18,12 @@ public class StockService {
         this.mouvementDAO = mouvementDAO;
     }
 
+    // Récupère l'historique complet des mouvements de stock
     public java.util.List<MouvementStock> getAllMouvements() {
         return mouvementDAO.listerHistorique();
     }
 
+    // Traite un mouvement (mise à jour stock + ajout historique)
     public void traiterMouvement(MouvementStock mvt) throws SQLException {
         if (mvt.getQuantite() <= 0)
             throw new SQLException("La quantité doit être supérieure à 0");

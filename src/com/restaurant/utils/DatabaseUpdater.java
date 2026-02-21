@@ -6,9 +6,11 @@ import java.sql.Statement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+// Gère les mises à jour automatiques du schéma de la base de données
 public class DatabaseUpdater {
     private static final Logger logger = LogManager.getLogger(DatabaseUpdater.class);
 
+    // Exécute les scripts ALTER TABLE nécessaires au schéma
     public static void updateSchema() {
         try (Connection conn = ConnectionDB.getConnection();
                 Statement stmt = conn.createStatement()) {

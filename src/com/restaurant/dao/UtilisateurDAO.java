@@ -15,14 +15,18 @@ public class UtilisateurDAO {
         u.setMdp(rs.getString("mdp"));
         String roleStr = rs.getString("role");
         if (roleStr != null) {
-            try { u.setRole(Role.valueOf(roleStr.toUpperCase())); }
-            catch (IllegalArgumentException e) { u.setRole(Role.CAISSIER); }
+            try {
+                u.setRole(Role.valueOf(roleStr.toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                u.setRole(Role.CAISSIER);
+            }
         } else {
             u.setRole(Role.CAISSIER);
         }
         return u;
     }
 
+    // Crée un nouvel utilisateur en base
     public int create(Utilisateur utilisateur) throws SQLException {
         String sql = "INSERT INTO UTILISATEUR (nom_util, mdp, role) VALUES (?, ?, ?)";
         Connection conn = ConnectionDB.getConnection();
@@ -37,7 +41,8 @@ public class UtilisateurDAO {
             if (rs.next()) {
                 int id = rs.getInt(1);
                 utilisateur.setIdUtil(id);
-                rs.close(); stmt.close();
+                rs.close();
+                stmt.close();
                 return id;
             }
             rs.close();
@@ -53,7 +58,8 @@ public class UtilisateurDAO {
         stmt.setInt(1, id);
         ResultSet rs = stmt.executeQuery();
         Utilisateur u = rs.next() ? fromResultSet(rs) : null;
-        rs.close(); stmt.close();
+        rs.close();
+        stmt.close();
         return u;
     }
 
@@ -64,10 +70,12 @@ public class UtilisateurDAO {
         stmt.setString(1, nomUtil);
         ResultSet rs = stmt.executeQuery();
         Utilisateur u = rs.next() ? fromResultSet(rs) : null;
-        rs.close(); stmt.close();
+        rs.close();
+        stmt.close();
         return u;
     }
 
+    // Vérifie les identifiants pour l'authentification
     public Utilisateur authenticate(String nomUtil, String mdp) throws SQLException {
         String sql = "SELECT * FROM UTILISATEUR WHERE nom_util = ? AND mdp = ?";
         Connection conn = ConnectionDB.getConnection();
@@ -76,7 +84,8 @@ public class UtilisateurDAO {
         stmt.setString(2, mdp);
         ResultSet rs = stmt.executeQuery();
         Utilisateur u = rs.next() ? fromResultSet(rs) : null;
-        rs.close(); stmt.close();
+        rs.close();
+        stmt.close();
         return u;
     }
 
@@ -86,8 +95,10 @@ public class UtilisateurDAO {
         Connection conn = ConnectionDB.getConnection();
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(sql);
-        while (rs.next()) liste.add(fromResultSet(rs));
-        rs.close(); stmt.close();
+        while (rs.next())
+            liste.add(fromResultSet(rs));
+        rs.close();
+        stmt.close();
         return liste;
     }
 
@@ -121,7 +132,8 @@ public class UtilisateurDAO {
         stmt.setString(1, nomUtil);
         ResultSet rs = stmt.executeQuery();
         boolean exists = rs.next() && rs.getInt(1) > 0;
-        rs.close(); stmt.close();
+        rs.close();
+        stmt.close();
         return exists;
     }
 }

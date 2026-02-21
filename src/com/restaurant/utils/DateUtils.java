@@ -5,25 +5,24 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 
-/**
- * Classe utilitaire pour la manipulation des dates
- */
+// Utilitaire pour la gestion et le formatage des dates
 public class DateUtils {
-    
+
     public static final DateTimeFormatter FORMAT_FR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     public static final DateTimeFormatter FORMAT_SQL = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     public static final DateTimeFormatter FORMAT_AFFICHAGE = DateTimeFormatter.ofPattern("dd MMMM yyyy");
-    
+
     /**
      * Convertit une LocalDate en chaîne au format français
      */
+    // Formate une date en chaîne (dd/MM/yyyy)
     public static String toStringFR(LocalDate date) {
         if (date == null) {
             return "";
         }
         return date.format(FORMAT_FR);
     }
-    
+
     /**
      * Convertit une LocalDate en chaîne au format SQL
      */
@@ -33,7 +32,7 @@ public class DateUtils {
         }
         return date.format(FORMAT_SQL);
     }
-    
+
     /**
      * Convertit une LocalDate en chaîne formatée pour l'affichage
      */
@@ -43,7 +42,7 @@ public class DateUtils {
         }
         return date.format(FORMAT_AFFICHAGE);
     }
-    
+
     /**
      * Convertit une chaîne au format français en LocalDate
      */
@@ -51,14 +50,14 @@ public class DateUtils {
         if (dateStr == null || dateStr.trim().isEmpty()) {
             return null;
         }
-        
+
         try {
             return LocalDate.parse(dateStr.trim(), FORMAT_FR);
         } catch (DateTimeParseException e) {
             return null;
         }
     }
-    
+
     /**
      * Convertit une chaîne au format SQL en LocalDate
      */
@@ -66,14 +65,14 @@ public class DateUtils {
         if (dateStr == null || dateStr.trim().isEmpty()) {
             return null;
         }
-        
+
         try {
             return LocalDate.parse(dateStr.trim(), FORMAT_SQL);
         } catch (DateTimeParseException e) {
             return null;
         }
     }
-    
+
     /**
      * Convertit une Date SQL en LocalDate
      */
@@ -81,10 +80,10 @@ public class DateUtils {
         if (sqlDate == null) {
             return null;
         }
-        
+
         return sqlDate.toLocalDate();
     }
-    
+
     /**
      * Convertit une LocalDate en Date SQL
      */
@@ -92,45 +91,45 @@ public class DateUtils {
         if (localDate == null) {
             return null;
         }
-        
+
         return java.sql.Date.valueOf(localDate);
     }
-    
+
     /**
      * Vérifie si une chaîne est une date valide au format français
      */
     public static boolean estDateValideFR(String dateStr) {
         return fromStringFR(dateStr) != null;
     }
-    
+
     /**
      * Vérifie si une chaîne est une date valide au format SQL
      */
     public static boolean estDateValideSQL(String dateStr) {
         return fromStringSQL(dateStr) != null;
     }
-    
+
     /**
      * Obtient la date du jour
      */
     public static LocalDate aujourdHui() {
         return LocalDate.now();
     }
-    
+
     /**
      * Obtient la date du jour au format français
      */
     public static String aujourdHuiStringFR() {
         return toStringFR(aujourdHui());
     }
-    
+
     /**
      * Obtient la date du jour au format SQL
      */
     public static String aujourdHuiStringSQL() {
         return toStringSQL(aujourdHui());
     }
-    
+
     /**
      * Ajoute des jours à une date
      */
@@ -140,7 +139,7 @@ public class DateUtils {
         }
         return date.plusDays(jours);
     }
-    
+
     /**
      * Soustrait des jours à une date
      */
@@ -150,7 +149,7 @@ public class DateUtils {
         }
         return date.minusDays(jours);
     }
-    
+
     /**
      * Ajoute des mois à une date
      */
@@ -160,7 +159,7 @@ public class DateUtils {
         }
         return date.plusMonths(mois);
     }
-    
+
     /**
      * Soustrait des mois à une date
      */
@@ -170,7 +169,7 @@ public class DateUtils {
         }
         return date.minusMonths(mois);
     }
-    
+
     /**
      * Ajoute des années à une date
      */
@@ -180,7 +179,7 @@ public class DateUtils {
         }
         return date.plusYears(annees);
     }
-    
+
     /**
      * Soustrait des années à une date
      */
@@ -190,7 +189,7 @@ public class DateUtils {
         }
         return date.minusYears(annees);
     }
-    
+
     /**
      * Calcule le nombre de jours entre deux dates
      */
@@ -200,7 +199,7 @@ public class DateUtils {
         }
         return java.time.temporal.ChronoUnit.DAYS.between(dateDebut, dateFin);
     }
-    
+
     /**
      * Vérifie si une date est comprise entre deux autres dates (inclusif)
      */
@@ -208,16 +207,16 @@ public class DateUtils {
         if (date == null || debut == null || fin == null) {
             return false;
         }
-        
+
         if (debut.isAfter(fin)) {
             LocalDate temp = debut;
             debut = fin;
             fin = temp;
         }
-        
+
         return !date.isBefore(debut) && !date.isAfter(fin);
     }
-    
+
     /**
      * Obtient le premier jour du mois pour une date donnée
      */
@@ -227,7 +226,7 @@ public class DateUtils {
         }
         return date.withDayOfMonth(1);
     }
-    
+
     /**
      * Obtient le dernier jour du mois pour une date donnée
      */
@@ -237,7 +236,7 @@ public class DateUtils {
         }
         return date.withDayOfMonth(date.lengthOfMonth());
     }
-    
+
     /**
      * Obtient le premier jour de l'année pour une date donnée
      */
@@ -247,7 +246,7 @@ public class DateUtils {
         }
         return date.withDayOfYear(1);
     }
-    
+
     /**
      * Obtient le dernier jour de l'année pour une date donnée
      */
@@ -257,7 +256,7 @@ public class DateUtils {
         }
         return date.withDayOfYear(date.lengthOfYear());
     }
-    
+
     /**
      * Formate une durée en jours en format lisible
      */
@@ -265,51 +264,53 @@ public class DateUtils {
         if (jours < 0) {
             return "Durée invalide";
         }
-        
+
         if (jours == 0) {
             return "Aujourd'hui";
         }
-        
+
         if (jours == 1) {
             return "1 jour";
         }
-        
+
         if (jours < 7) {
             return jours + " jours";
         }
-        
+
         if (jours < 30) {
             long semaines = jours / 7;
             long joursRestants = jours % 7;
-            
+
             if (joursRestants == 0) {
                 return semaines + " semaine" + (semaines > 1 ? "s" : "");
             } else {
-                return semaines + " semaine" + (semaines > 1 ? "s" : "") + " et " + joursRestants + " jour" + (joursRestants > 1 ? "s" : "");
+                return semaines + " semaine" + (semaines > 1 ? "s" : "") + " et " + joursRestants + " jour"
+                        + (joursRestants > 1 ? "s" : "");
             }
         }
-        
+
         if (jours < 365) {
             long mois = jours / 30;
             long joursRestants = jours % 30;
-            
+
             if (joursRestants == 0) {
                 return mois + " mois";
             } else {
                 return mois + " mois et " + joursRestants + " jour" + (joursRestants > 1 ? "s" : "");
             }
         }
-        
+
         long annees = jours / 365;
         long joursRestants = jours % 365;
-        
+
         if (joursRestants == 0) {
             return annees + " an" + (annees > 1 ? "s" : "");
         } else {
-            return annees + " an" + (annees > 1 ? "s" : "") + " et " + joursRestants + " jour" + (joursRestants > 1 ? "s" : "");
+            return annees + " an" + (annees > 1 ? "s" : "") + " et " + joursRestants + " jour"
+                    + (joursRestants > 1 ? "s" : "");
         }
     }
-    
+
     /**
      * Vérifie si une date est dans le passé
      */
@@ -319,7 +320,7 @@ public class DateUtils {
         }
         return date.isBefore(aujourdHui());
     }
-    
+
     /**
      * Vérifie si une date est dans le futur
      */
@@ -329,7 +330,7 @@ public class DateUtils {
         }
         return date.isAfter(aujourdHui());
     }
-    
+
     /**
      * Vérifie si une date est aujourd'hui
      */

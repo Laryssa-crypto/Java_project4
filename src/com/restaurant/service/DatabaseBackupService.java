@@ -47,6 +47,7 @@ public class DatabaseBackupService {
         return "gestion_restaurant";
     }
 
+    // Exporte la base de données vers un fichier SQL (utilise mysqldump)
     public boolean sauvegarderBaseDeDonnees(String cheminDestination) throws Exception {
         String dbName = extraireNomBaseDeDonnees(url);
         List<String> command = new ArrayList<>();
@@ -89,6 +90,7 @@ public class DatabaseBackupService {
         return true;
     }
 
+    // Restaure la base de données depuis un fichier SQL (utilise mysql)
     public boolean restaurerBaseDeDonnees(String cheminSourceSql) throws Exception {
         String dbName = extraireNomBaseDeDonnees(url);
         List<String> command = new ArrayList<>();

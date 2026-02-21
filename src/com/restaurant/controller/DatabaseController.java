@@ -17,6 +17,7 @@ public class DatabaseController {
         this.databaseView = view;
     }
 
+    // Lance la sauvegarde de la base de données en arrière-plan
     public void sauvegarderBaseDeDonnees(String outputFilePath) {
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
             @Override
@@ -42,6 +43,7 @@ public class DatabaseController {
         worker.execute();
     }
 
+    // Lance la restauration de la base de données en arrière-plan
     public void restaurerBaseDeDonnees(String sqlFilePath) {
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
             @Override

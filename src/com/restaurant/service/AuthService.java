@@ -14,11 +14,13 @@ public class AuthService {
         this.utilisateurDAO = utilisateurDAO;
     }
 
+    // Authentifie un utilisateur avec son nom et mot de passe
     public Utilisateur authenticate(String nomUtil, String motDePasse) throws SQLException {
         String hashedMdp = PasswordUtils.hashPassword(motDePasse);
         return utilisateurDAO.authenticate(nomUtil.trim(), hashedMdp);
     }
 
+    // Crée un nouvel utilisateur de type CAISSIER
     public boolean creerUtilisateur(String nomUtil, String motDePasse) throws SQLException {
         String trimmedNom = nomUtil.trim();
         if (trimmedNom.isEmpty() || trimmedNom.length() > 50) {

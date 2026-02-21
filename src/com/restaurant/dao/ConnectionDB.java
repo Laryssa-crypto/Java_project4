@@ -9,6 +9,7 @@ import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+// Classe utilitaire pour la connexion JDBC à MySQL
 public class ConnectionDB {
 
     private static final Logger logger = LogManager.getLogger(ConnectionDB.class);
@@ -31,6 +32,7 @@ public class ConnectionDB {
         }
     }
 
+    // Singleton pour récupérer la connexion active
     public static Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {

@@ -3,6 +3,7 @@ package com.restaurant.utils;
 import javax.swing.*;
 import java.awt.*;
 
+// Centralisation du design (couleurs, polices, styles Swing)
 public class DesignSystem {
 
     public static final Color PRIMARY = new Color(37, 99, 235);
@@ -30,6 +31,7 @@ public class DesignSystem {
     public static final Dimension SIDEBAR_BTN_SIZE = new Dimension(230, 45);
     public static final Dimension SIDEBAR_WIDTH_DIM = new Dimension(250, Integer.MAX_VALUE);
 
+    // Applique le style par défaut aux boutons
     public static void styleButton(JButton btn) {
         styleButton(btn, PRIMARY);
     }

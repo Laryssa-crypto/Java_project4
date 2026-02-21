@@ -25,6 +25,7 @@ public class ProduitDAO {
         return p;
     }
 
+    // Ajoute un produit et récupère son ID généré
     public boolean ajouter(Produit produit) {
         String sql = "INSERT INTO PRODUIT (nom_pro, id_cat, prix_vente, stock_actu, seuil_alerte) VALUES (?, ?, ?, ?, ?)";
         Connection conn = ConnectionDB.getConnection();
@@ -48,6 +49,7 @@ public class ProduitDAO {
         return false;
     }
 
+    // Met à jour les informations d'un produit
     public boolean modifier(Produit produit) {
         String sql = "UPDATE PRODUIT SET nom_pro=?, id_cat=?, prix_vente=?, stock_actu=?, seuil_alerte=? WHERE id_pro=?";
         Connection conn = ConnectionDB.getConnection();
@@ -73,6 +75,7 @@ public class ProduitDAO {
      * @throws ProduitLieACommandeException si le produit est lié à des commandes
      *                                      (MySQL error 1451)
      */
+    // Supprime un produit par ID
     public boolean deleteProduit(int idPro) throws ProduitLieACommandeException {
         String sql = "DELETE FROM PRODUIT WHERE id_pro = ?";
         Connection conn = ConnectionDB.getConnection();
@@ -150,6 +153,7 @@ public class ProduitDAO {
         return produits;
     }
 
+    // Récupère les produits en rupture de stock/seuil
     public List<Produit> getProduitsSousSeuilAlerte() {
         List<Produit> produits = new ArrayList<>();
         String sql = SELECT_BASE + "WHERE p.stock_actu < p.seuil_alerte ORDER BY p.stock_actu";

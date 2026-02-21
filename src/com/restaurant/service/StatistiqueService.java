@@ -26,10 +26,12 @@ public class StatistiqueService {
         this.produitDAO = produitDAO;
     }
 
+    // Calcule le chiffre d'affaires pour une journée spécifique
     public double getChiffreAffairesParJour(LocalDate date) throws SQLException {
         return getChiffreAffairesPeriode(date, date);
     }
 
+    // Calcule le CA total sur une période donnée
     public double getChiffreAffairesPeriode(LocalDate debut, LocalDate fin) throws SQLException {
         double ca = 0.0;
         for (Commande c : commandeDAO.findByPeriode(debut, fin)) {
@@ -56,6 +58,7 @@ public class StatistiqueService {
         return map;
     }
 
+    // Retourne le top des produits les plus vendus par quantité
     public List<ProduitVendu> getTopProduitsQuantite(LocalDate debut, LocalDate fin, int limite) throws SQLException {
         Map<Integer, ProduitVendu> map = new HashMap<>();
 
@@ -127,6 +130,7 @@ public class StatistiqueService {
         return sousSeuil;
     }
 
+    // Récupère les indicateurs généraux du tableau de bord
     public StatistiquesGenerales getStatistiquesGenerales() throws SQLException {
         StatistiquesGenerales stats = new StatistiquesGenerales();
         LocalDate today = LocalDate.now();

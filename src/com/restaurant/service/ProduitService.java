@@ -15,40 +15,48 @@ public class ProduitService {
         this.produitDAO = produitDAO;
     }
 
+    // Ajoute un nouveau produit après validation
     public boolean ajouterProduit(String nom, int idCat, double prix, int stock, int seuil) {
         if (!valider(nom, prix, stock, seuil))
             return false;
         return produitDAO.ajouter(new Produit(nom.trim(), idCat, prix, stock, seuil));
     }
 
+    // Modifie un produit existant après validation
     public boolean modifierProduit(int idPro, String nom, int idCat, double prix, int stock, int seuil) {
         if (!valider(nom, prix, stock, seuil))
             return false;
         return produitDAO.modifier(new Produit(idPro, nom.trim(), idCat, prix, stock, seuil));
     }
 
+    // Supprime un produit s'il n'est pas lié à une commande
     public boolean supprimerProduit(int idPro) throws ProduitDAO.ProduitLieACommandeException {
         return produitDAO.deleteProduit(idPro);
     }
 
+    // Récupère tous les produits
     public List<Produit> getAllProduits() {
         return produitDAO.getAll();
     }
 
+    // Récupère un produit par son ID
     public Produit getProduitById(int idPro) {
         return produitDAO.getById(idPro);
     }
 
+    // Recherche des produits par nom
     public List<Produit> rechercherProduits(String nom) {
         if (nom == null || nom.trim().isEmpty())
             return getAllProduits();
         return produitDAO.rechercherParNom(nom.trim());
     }
 
+    // Récupère les produits d'une catégorie
     public List<Produit> getProduitsParCategorie(int idCat) {
         return produitDAO.getByCategorie(idCat);
     }
 
+    // Récupère les produits dont le stock est sous le seuil
     public List<Produit> getProduitsSousSeuilAlerte() {
         return produitDAO.getProduitsSousSeuilAlerte();
     }

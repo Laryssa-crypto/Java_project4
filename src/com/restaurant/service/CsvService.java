@@ -10,6 +10,7 @@ import java.util.List;
 
 public class CsvService {
 
+    // Exporte la liste des produits en CSV
     public static boolean exporterProduits(String path, List<Produit> produits) {
         try (PrintWriter writer = new PrintWriter(new File(path))) {
             writer.println("ID;Nom;Categorie;Prix;Stock;Seuil");
@@ -24,6 +25,7 @@ public class CsvService {
         }
     }
 
+    // Importe des produits depuis un fichier CSV
     public static List<Produit> importerProduits(String path) {
         java.util.List<Produit> liste = new java.util.ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
@@ -45,6 +47,7 @@ public class CsvService {
         return liste;
     }
 
+    // Exporte le récapitulatif des commandes et leurs détails
     public static boolean exporterCommandes(String path, List<Commande> commandes, List<LigneCommande> toutesLignes) {
         try (PrintWriter writer = new PrintWriter(new File(path))) {
             writer.println("RECAPITULATIF DES COMMANDES");
@@ -65,6 +68,7 @@ public class CsvService {
         }
     }
 
+    // Exporte les statistiques générales et tops produits
     public static boolean exporterStatistiques(String path, StatistiquesGenerales stats, List<ProduitVendu> topQte,
             List<ProduitVendu> topMontant, List<Produit> rupture, List<Produit> sousSeuil) {
         try (PrintWriter writer = new PrintWriter(new File(path))) {

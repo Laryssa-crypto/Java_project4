@@ -27,6 +27,7 @@ public class CommandeService {
         this.stockService = stockService;
     }
 
+    // Crée une nouvelle commande en base
     public Commande creerCommande(String nomUtil) throws SQLException {
         Commande commande = new Commande();
         commande.setNomUtil(nomUtil);
@@ -36,6 +37,7 @@ public class CommandeService {
         throw new SQLException("Impossible de créer la commande");
     }
 
+    // Ajoute un produit à une commande existante
     public boolean ajouterProduit(int idCommande, int idProduit, int quantite) throws SQLException {
         Commande commande = commandeDAO.findById(idCommande);
         if (commande == null || commande.getEtat() != EtatCommande.EN_COURS)
@@ -59,6 +61,7 @@ public class CommandeService {
         return false;
     }
 
+    // Modifie la quantité d'une ligne de commande
     public boolean modifierQuantiteLigne(int idLigne, int nouvelleQuantite) throws SQLException {
         LigneCommande ligne = ligneCommandeDAO.findById(idLigne);
         if (ligne == null)
@@ -84,6 +87,7 @@ public class CommandeService {
         return ok;
     }
 
+    // Supprime une ligne de commande
     public boolean supprimerLigne(int idLigne) throws SQLException {
         LigneCommande ligne = ligneCommandeDAO.findById(idLigne);
         if (ligne == null)
@@ -101,6 +105,7 @@ public class CommandeService {
         return ok;
     }
 
+    // Valide une commande et met à jour les stocks
     public boolean validerCommande(int idCommande) throws SQLException {
         Connection conn = ConnectionDB.getConnection();
         boolean prevAutoCommit = conn.getAutoCommit();
@@ -137,6 +142,7 @@ public class CommandeService {
         }
     }
 
+    // Annule une commande et restaure les stocks si validée
     public boolean annulerCommande(int idCommande) throws SQLException {
         Connection conn = ConnectionDB.getConnection();
         boolean prevAutoCommit = conn.getAutoCommit();
@@ -189,6 +195,7 @@ public class CommandeService {
         return commandeDAO.findByEtat(etat);
     }
 
+    // Supprime les commandes sans produits
     public void nettoyerCommandesVides() throws SQLException {
         int count = commandeDAO.deleteEmptyOrders();
         if (count > 0) {

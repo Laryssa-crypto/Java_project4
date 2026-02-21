@@ -1,16 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.restaurant.model;
 
 import com.restaurant.model.enums.TypeMouvement;
 import java.time.LocalDate;
 
-/**
- *
- * @author jojo
- */
+// Représente un mouvement de stock (entrée ou sortie)
 public class MouvementStock {
 
     private int id;

@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 public class CategorieDAO {
     private static final Logger logger = LogManager.getLogger(CategorieDAO.class);
 
+    // Ajoute une catégorie et récupère son ID généré
     public boolean ajouter(Categorie categorie) {
         String sql = "INSERT INTO CATEGORIE (libelle_cat) VALUES (?)";
         Connection conn = ConnectionDB.getConnection();
@@ -70,6 +71,7 @@ public class CategorieDAO {
         return null;
     }
 
+    // Récupère toutes les catégories (triées par libellé)
     public List<Categorie> getAll() {
         List<Categorie> categories = new ArrayList<>();
         String sql = "SELECT * FROM CATEGORIE ORDER BY libelle_cat";

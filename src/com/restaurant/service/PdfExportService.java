@@ -13,6 +13,7 @@ import java.util.List;
 
 public class PdfExportService {
 
+    // Génère un fichier PDF pour un reçu de commande
     public static void genererRecuPDF(Commande c, List<LigneCommande> lignes, String path) {
         Document document = new Document(PageSize.A6);
         try {
@@ -33,6 +34,7 @@ public class PdfExportService {
         }
     }
 
+    // Exporte les statistiques globales dans un fichier PDF
     public static void exporterStatistiquesPDF(String path, StatistiquesGenerales stats, List<ProduitVendu> topQte,
             List<ProduitVendu> topMontant, List<Produit> rupture, List<Produit> sousSeuil) {
         Document document = new Document();

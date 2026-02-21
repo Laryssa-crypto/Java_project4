@@ -70,6 +70,7 @@ public class ProduitController {
         return categorieService.getCategorieById(idCat);
     }
 
+    // Déclenche l'export CSV et affiche une confirmation
     public void exporterCSV(String path) {
         List<Produit> produits = getAllProduits();
         if (com.restaurant.service.CsvService.exporterProduits(path, produits)) {
@@ -81,6 +82,7 @@ public class ProduitController {
         }
     }
 
+    // Déclenche l'import CSV et affiche un résumé
     public void importerCSV(String path) {
         try {
             List<Produit> importes = com.restaurant.service.CsvService.importerProduits(path);
