@@ -6,15 +6,19 @@ import com.restaurant.view.LoginView;
 import com.restaurant.view.MainView;
 import java.sql.SQLException;
 import java.util.prefs.Preferences;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class LoginController {
+
+    private static final Logger logger = LogManager.getLogger(LoginController.class);
 
     private LoginView loginView;
     private AuthService authService;
     private Utilisateur utilisateurConnecte;
 
     public LoginController() {
-        this.authService = new AuthService();
+        this.authService = new AuthService(new com.restaurant.dao.UtilisateurDAO());
         this.loginView = new LoginView(this);
         chargerPreference();
     }
@@ -28,12 +32,10 @@ public class LoginController {
         }
     }
 
-    // Affiche la fenêtre de connexion
     public void afficherLogin() {
         loginView.setVisible(true);
     }
 
-    // Tente d'authentifier l'utilisateur
     public boolean seConnecter(String nomUtil, String motDePasse) {
         try {
             if (nomUtil.isEmpty()) {
@@ -48,7 +50,6 @@ public class LoginController {
             utilisateurConnecte = authService.authenticate(nomUtil, motDePasse);
 
             if (utilisateurConnecte != null) {
-                // Gestion de la préférence "Se souvenir de moi"
                 Preferences prefs = Preferences.userNodeForPackage(LoginController.class);
                 if (loginView.isSeSouvenir()) {
                     prefs.put("remembered_user", nomUtil);
@@ -57,20 +58,22 @@ public class LoginController {
                 }
 
                 loginView.setVisible(false);
+                logger.info("Connexion réussie pour l'utilisateur: " + nomUtil);
                 new MainView(utilisateurConnecte).setVisible(true);
                 return true;
             } else {
+                logger.warn("Échec de connexion (identifiants incorrects) pour l'utilisateur: " + nomUtil);
                 loginView.afficherErreur("Identifiants incorrects");
                 return false;
             }
 
         } catch (SQLException e) {
+            logger.error("Erreur base de données lors de la tentative de connexion: " + e.getMessage(), e);
             loginView.afficherErreur("Erreur base de données : " + e.getMessage());
             return false;
         }
     }
 
-    // Crée un nouveau compte utilisateur
     public boolean creerCompte(String nomUtil, String motDePasse, String confirmation) {
         try {
             if (nomUtil.isEmpty()) {
@@ -100,8 +103,8 @@ public class LoginController {
             }
 
         } catch (SQLException e) {
-            loginView.afficherErreur(e.getMessage().contains("existe") ?
-                "Ce nom d'utilisateur existe déjà" : "Erreur : " + e.getMessage());
+            loginView.afficherErreur(e.getMessage().contains("existe") ? "Ce nom d'utilisateur existe déjà"
+                    : "Erreur : " + e.getMessage());
             return false;
         }
     }

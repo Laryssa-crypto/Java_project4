@@ -10,7 +10,6 @@ import java.util.Date;
  */
 public class DateUtils {
     
-    // Formateurs de date
     public static final DateTimeFormatter FORMAT_FR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     public static final DateTimeFormatter FORMAT_SQL = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     public static final DateTimeFormatter FORMAT_AFFICHAGE = DateTimeFormatter.ofPattern("dd MMMM yyyy");
@@ -210,7 +209,6 @@ public class DateUtils {
             return false;
         }
         
-        // S'assurer que debut <= fin
         if (debut.isAfter(fin)) {
             LocalDate temp = debut;
             debut = fin;

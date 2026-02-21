@@ -2,7 +2,7 @@
 
 ## 📋 Description
 
-Application de bureau Java pour la gestion d'un restaurant, développée avec le pattern MVC et une interface Swing.
+Application de bureau Java pour la gestion d'un restaurant, développée avec une architecture en **4 couches logiques** (Vue, Contrôleur, Service, DAO) et une interface Swing moderne.
 
 ## 🏗️ Architecture
 
@@ -19,43 +19,54 @@ com.restaurant/
 │   ├── Utilisateur.java
 │   └── enums
 │        ├── TypeMouvement.java
-│        └── EtatCommande.java
+│        ├── EtatCommande.java
+│        └── Role.java
 │
 ├── dao            → Accès à la base de données (JDBC)
 │   ├── ConnectionDB.java
 │   ├── CategorieDAO.java
-│   ├── ProduitDAO.java
+│   ├── ProduitDAO.java          ← inclut ProduitLieACommandeException
 │   ├── MouvementStockDAO.java
 │   ├── CommandeDAO.java
 │   ├── LigneCommandeDAO.java
 │   └── UtilisateurDAO.java
 │
 ├── service        → Logique métier (validation + règles de gestion)
+│   ├── AuthService.java
 │   ├── CategorieService.java
 │   ├── ProduitService.java
 │   ├── StockService.java
 │   ├── CommandeService.java
-│   └── AuthService.java
+│   ├── StatistiqueService.java
+│   ├── PrintService.java
+│   ├── PdfExportService.java
+│   ├── CsvService.java
+│   └── DatabaseBackupService.java
 │
 ├── controller     → Contrôleurs (liaison View ↔ Service)
 │   ├── LoginController.java
 │   ├── ProduitController.java
 │   ├── StockController.java
 │   ├── CommandeController.java
-│   └── StatistiqueController.java
+│   ├── StatistiqueController.java
+│   └── DatabaseController.java
 │
 ├── view           → Interfaces graphiques (Swing)
+│   ├── SplashScreen.java
 │   ├── LoginView.java
 │   ├── MainView.java
 │   ├── ProduitView.java
 │   ├── StockView.java
 │   ├── CommandeView.java
-│   └── StatistiqueView.java
+│   ├── StatistiqueView.java
+│   └── DatabaseView.java
 │
-└── utils          → Classes utilitaires
+└── utils          → Classes utilitaires et support
+    ├── DesignSystem.java        ← couleurs, polices, composants centralisés
     ├── ValidationUtils.java
+    ├── PasswordUtils.java
     ├── DateUtils.java
-    └── AlertUtils.java
+    └── DatabaseUpdater.java
 ```
 
 ## 🗄️ Base de données
@@ -82,26 +93,27 @@ CREATE TABLE PRODUIT (
     FOREIGN KEY(id_cat) REFERENCES CATEGORIE(id_cat)
 );
 
-CREATE TABLE MVT_STOCK(
-    id_stock INT NOT NULL AUTO_INCREMENT,
-    type CHAR(6) NOT NULL CHECK(type IN('ENTREE', 'SORTIE')),
+CREATE TABLE MOUVEMENT_STOCK (
+    id_mvt INT NOT NULL AUTO_INCREMENT,
+    type VARCHAR(6) NOT NULL CHECK(type IN('ENTREE', 'SORTIE')),
     id_pro INT NOT NULL,
-    qte_stock INT NOT NULL CHECK(qte_stock > 0),
+    quantite INT NOT NULL CHECK(quantite > 0),
     date DATE NOT NULL,
     motif VARCHAR(50),
-    PRIMARY KEY(id_stock),
+    PRIMARY KEY(id_mvt),
     FOREIGN KEY(id_pro) REFERENCES PRODUIT(id_pro)
 );
 
 CREATE TABLE COMMANDE (
     id_cmde INT NOT NULL AUTO_INCREMENT,
     date DATE NOT NULL,
-    etat VARCHAR(8) NOT NULL DEFAULT 'EN_COURS' CHECK(etat IN('EN_COURS', 'VALIDEE', 'ANNULEE')),
+    etat VARCHAR(8) NOT NULL DEFAULT 'EN_COURS'
+        CHECK(etat IN('EN_COURS', 'VALIDEE', 'ANNULEE')),
     total DECIMAL(10,2) NOT NULL,
     PRIMARY KEY(id_cmde)
 );
 
-CREATE TABLE LIG_COMMANDE (
+CREATE TABLE LIGNE_COMMANDE (
     id_lig INT NOT NULL AUTO_INCREMENT,
     id_cmde INT NOT NULL,
     id_pro INT NOT NULL,
@@ -113,11 +125,13 @@ CREATE TABLE LIG_COMMANDE (
     FOREIGN KEY(id_cmde) REFERENCES COMMANDE(id_cmde)
 );
 
-CREATE TABLE UTILISATEUR(
-    id_util INT NOT NULL AUTO_INCREMENT,
-    nom_util VARCHAR(50) NOT NULL UNIQUE,
+CREATE TABLE UTILISATEUR (
+    id_uti INT NOT NULL AUTO_INCREMENT,
+    nom_uti VARCHAR(50) NOT NULL UNIQUE,
     mdp VARCHAR(256) NOT NULL,
-    PRIMARY KEY(id_util)
+    role VARCHAR(8) NOT NULL DEFAULT 'CAISSIER'
+        CHECK(role IN('ADMIN', 'CAISSIER')),
+    PRIMARY KEY(id_uti)
 );
 ```
 
@@ -125,112 +139,115 @@ CREATE TABLE UTILISATEUR(
 
 ### Prérequis
 
-- Java 8 ou supérieur
-- MySQL Server 5.7 ou supérieur
+- Java 21 (Recommandé) ou supérieur
+- MySQL Server 8.0 ou supérieur
 - NetBeans IDE (recommandé)
+- Bibliothèques dans `/lib` : JFreeChart, iText, Apache POI, Log4j2, MySQL Connector/J
 
 ### Configuration
 
 1. **Base de données**
    - Démarrer le serveur MySQL
-   - Créer la base de données `gestion_restaurant`
-   - Exécuter le script SQL ci-dessus
+   - Exécuter le script SQL fourni : `database_setup.sql`
 
-2. **Connexion**
-   - Les paramètres de connexion sont dans `ConnectionDB.java` :
-   ```java
-   private static final String URL = "jdbc:mysql://localhost:3306/gestion_restaurant";
-   private static final String USER = "root";
-   private static final String PASSWORD = "";
+2. **Connexion** — créer `config.properties` à la racine du projet (fichier non versionné) :
+   ```properties
+   db.url=jdbc:mysql://localhost:3306/gestion_restaurant
+   db.user=root
+   db.password=votre_mot_de_passe
    ```
 
-3. **Driver MySQL**
-   - Ajouter le driver JDBC MySQL au classpath
-   - Télécharger : https://dev.mysql.com/downloads/connector/j/
+3. **Comptes par défaut**
+
+   | Rôle | Login | Mot de passe |
+   |---|---|---|
+   | Admin | `admin` | `admin` |
+   | Caissier | `caissier` | `caissier` |
 
 ### Compilation et Exécution
 
 ```bash
 # Compilation
-javac -cp ".:mysql-connector-java.jar" src/com/restaurant/Main.java
+javac -d bin -cp "src/:lib/*" $(find src -name "*.java")
 
 # Exécution
-java -cp ".:src:mysql-connector-java.jar" com.restaurant.Main
+java -cp "bin:lib/*" com.restaurant.Main
 ```
+
+Ou directement depuis **NetBeans** : `Run Project`.
 
 ## 📱 Fonctionnalités
 
-### 🍽 Gestion des produits et catégories
-- Ajouter, modifier, supprimer des catégories
-- Ajouter, modifier, supprimer des produits
-- Gestion des prix et des stocks
-- Association produit-catégorie
+### 🔐 Authentification & Sécurité
+- Connexion avec identifiant et mot de passe (haché BCrypt)
+- Rôles **Admin** et **Caissier** — accès aux modules selon le rôle
+- Déconnexion automatique après 10 minutes d'inactivité
+
+### 🍽️ Gestion des produits et catégories
+- CRUD complet sur les catégories et produits
+- Recherche rapide par nom (auto-complétion)
+- Coloration automatique : orange = alerte, rouge = rupture
+- Import / Export **CSV**
 
 ### 📦 Gestion du stock
-- Enregistrer les entrées de stock
-- Enregistrer les sorties de stock
-- Consulter l'historique des mouvements
-- Alertes pour les stocks faibles
+- Enregistrement des entrées et sorties de stock
+- Historique filtrable par type ou produit
+- Badge d'alerte dans la sidebar lorsque le stock est critique
 
 ### 🛒 Gestion des commandes
-- Créer de nouvelles commandes
-- Ajouter des produits aux commandes
-- Modifier les quantités
-- Valider les commandes (avec déduction du stock)
-- Annuler les commandes (avec restauration du stock)
+- Création, ajout de produits (auto-complétion), modification de quantité
+- Validation atomique via transaction SQL (stock déduit, état mis à jour)
+- Annulation avec restitution du stock
+- Impression après validation : **Reçu Client**, **Format Gestion**, ou les deux
 
 ### 📊 Statistiques et rapports
-- Chiffre d'affaires par jour/période
-- Top produits vendus
-- Produits en rupture de stock
-- Produits sous le seuil d'alerte
-- Tableau de bord général
+- CA journalier / sur plage personnalisable
+- Top produits vendus (par quantité ou par montant)
+- Alertes et ruptures en temps réel
+- Graphiques JFreeChart intégrés au tableau de bord
+- Export **PDF** (iText) et **CSV**
 
-### 👤 Gestion des utilisateurs
-- Création de comptes
-- Authentification sécurisée
-- Gestion des mots de passe
+### 👤 Administration (Admin uniquement)
+- Création, modification, suppression de comptes employés
+- Attribution des rôles
+- **Sauvegarde et Restauration SQL** : Export automatique (`mysqldump`) de l'intégralité de la base et réimportation depuis l'interface en cas de panne (Continuité métier).
 
 ## 🔧 Règles métier
 
 - Le prix de vente doit être strictement positif
 - Le stock ne peut pas être négatif
-- La quantité de mouvement doit être positive
-- Interdire une sortie si la quantité dépasse le stock disponible
-- Au moins une ligne pour valider une commande
-- Mot de passe masqué à l'écran
+- La quantité d'un mouvement doit être > 0
+- Une sortie est refusée si la quantité dépasse le stock disponible
+- Une commande doit contenir au moins une ligne pour être validée
+- Un produit lié à des commandes ne peut pas être supprimé
 - Login unique par utilisateur
 
 ## 🎯 Points forts
 
-- ✅ Architecture MVC respectée
-- ✅ Code commenté et maintenable
-- ✅ Validation complète des données
-- ✅ Gestion des exceptions
-- ✅ Interface utilisateur intuitive
-- ✅ Persistance des données
-- ✅ Statistiques détaillées
+- ✅ Architecture MVC rigoureuse
+- ✅ Transactions SQL atomiques (commit/rollback)
+- ✅ Gestion spécifique des exceptions (SQLException, NumberFormatException…)
+- ✅ Design System centralisé (couleurs, polices, composants)
+- ✅ Performance : Multithreading via `SwingWorker` (UI non-bloquante)
+- ✅ Maintenance : Migration automatique du schéma (`DatabaseUpdater`)
+- ✅ Logging via Log4j2
+- ✅ Statistiques avancées avec graphiques et exports multi-formats (PDF, CSV)
+- ✅ Import/Export CSV
 
 ## 🐛 Dépannage
 
-### Problèmes courants
-
-1. **Driver MySQL introuvable**
-   - Vérifier que le driver MySQL JDBC est dans le classpath
-   - Télécharger le driver depuis le site officiel MySQL
-
-2. **Connexion refusée**
-   - Vérifier que le serveur MySQL est démarré
-   - Vérifier les identifiants dans `ConnectionDB.java`
-   - Vérifier que la base de données existe
-
-3. **Compilation échoue**
-   - Vérifier que toutes les dépendances sont présentes
-   - Vérifier la version de Java (minimum Java 8)
+| Problème | Solution |
+|---|---|
+| Connexion refusée | Vérifier que MySQL est démarré et que `config.properties` est correct |
+| Driver introuvable | Vérifier que `mysql-connector-j-*.jar` est dans `/lib` |
+| Produit non supprimable | Le produit est lié à des commandes — archivez-le plutôt |
+| Impression vide | Vérifier qu'une imprimante système est configurée |
+| Export CSV vide | Vérifier qu'il existe des commandes validées pour la période |
+| Compilation échoue | Vérifier que tous les JARs de `/lib` sont dans le classpath |
 
 ## 👨‍💻 Auteurs
 
-Développé dans le cadre du projet de POO Java à l'IAI-TOGO (2025-2026)
+Développé dans le cadre du projet de POO Java à l'**IAI-TOGO** (2025-2026).
 
 ## 📄 Licence
 

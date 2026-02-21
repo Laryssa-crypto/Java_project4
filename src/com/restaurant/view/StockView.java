@@ -5,10 +5,10 @@ import com.restaurant.model.Produit;
 import com.restaurant.model.MouvementStock;
 import com.restaurant.dao.ProduitDAO;
 import com.restaurant.dao.MouvementStockDAO;
+import com.restaurant.utils.DesignSystem;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.List;
 
 public class StockView extends JPanel {
 
@@ -20,10 +20,14 @@ public class StockView extends JPanel {
     private DefaultTableModel tableModel;
     private final StockController controller;
 
+    private final ProduitDAO produitDAO;
+    private final MouvementStockDAO mouvementDAO;
+
     public StockView() {
+        this.produitDAO = new ProduitDAO();
+        this.mouvementDAO = new MouvementStockDAO();
         initAndLayout();
         this.controller = new StockController(this);
-
         chargerProduits();
         actualiserHistorique();
     }
@@ -31,7 +35,6 @@ public class StockView extends JPanel {
     private void initAndLayout() {
         setLayout(new BorderLayout(15, 15));
 
-        // Formulaire de saisie d'un mouvement
         JPanel panelForm = new JPanel(new GridLayout(5, 2, 10, 10));
         panelForm.setBorder(BorderFactory.createTitledBorder("Nouveau Mouvement"));
 
@@ -52,42 +55,78 @@ public class StockView extends JPanel {
 
         panelForm.add(new JLabel("Quantité :"));
         txtQuantite = new JTextField();
+        DesignSystem.styleTextField(txtQuantite);
         panelForm.add(txtQuantite);
 
         panelForm.add(new JLabel("Motif :"));
         txtMotif = new JTextField();
+        DesignSystem.styleTextField(txtMotif);
         panelForm.add(txtMotif);
 
         btnValider = new JButton("Enregistrer le mouvement");
-        btnValider.setBackground(new Color(70, 130, 180));
-        btnValider.setForeground(Color.WHITE);
+        DesignSystem.styleButton(btnValider, DesignSystem.PRIMARY);
         panelForm.add(new JLabel());
         panelForm.add(btnValider);
 
-        // Tableau de l'historique des mouvements
-        String[] columns = {"ID", "Produit", "Type", "Quantité", "Date", "Motif"};
-        tableModel = new DefaultTableModel(columns, 0);
+        String[] columns = { "ID", "Réf Facture", "Produit", "Type", "Quantité", "Date", "Motif" };
+        tableModel = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
+        };
         tableHistorique = new JTable(tableModel);
-        JScrollPane scrollPane = new JScrollPane(tableHistorique);
-        scrollPane.setBorder(BorderFactory.createTitledBorder("Historique des mouvements"));
+
+        javax.swing.table.TableRowSorter<DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(tableModel);
+        tableHistorique.setRowSorter(sorter);
+
+        JPanel panelHistorique = new JPanel(new BorderLayout());
+        JPanel panelRecherche = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelRecherche.add(new JLabel("Rechercher:"));
+        JTextField txtSearch = new JTextField(20);
+        DesignSystem.styleTextField(txtSearch);
+        txtSearch.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            private void handle() {
+                String t = txtSearch.getText();
+                sorter.setRowFilter(t.trim().isEmpty()
+                        ? null
+                        : RowFilter.regexFilter("(?i)" + java.util.regex.Pattern.quote(t)));
+            }
+
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                handle();
+            }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                handle();
+            }
+
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                handle();
+            }
+        });
+        panelRecherche.add(txtSearch);
+
+        panelHistorique.add(panelRecherche, BorderLayout.NORTH);
+        panelHistorique.add(new JScrollPane(tableHistorique), BorderLayout.CENTER);
+        panelHistorique.setBorder(BorderFactory.createTitledBorder("Historique des mouvements"));
 
         add(panelForm, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
+        add(panelHistorique, BorderLayout.CENTER);
 
         btnValider.addActionListener(e -> controller.enregistrerMouvement());
     }
 
     public void actualiserHistorique() {
-        try {
-            tableModel.setRowCount(0);
-            for (MouvementStock m : new MouvementStockDAO().listerHistorique()) {
-                tableModel.addRow(new Object[]{
-                    m.getId(), m.getProduit().getNomPro(), m.getType(),
+        tableModel.setRowCount(0);
+        for (MouvementStock m : mouvementDAO.listerHistorique()) {
+            tableModel.addRow(new Object[] {
+                    m.getId(), m.getReference(), m.getProduit().getNomPro(), m.getType(),
                     m.getQuantite(), m.getDate(), m.getMotif()
-                });
-            }
-        } catch (Exception e) {
-            System.err.println("Erreur chargement historique : " + e.getMessage());
+            });
         }
     }
 
@@ -95,22 +134,30 @@ public class StockView extends JPanel {
         txtQuantite.setText("");
         txtMotif.setText("");
         rbEntree.setSelected(true);
-        if (comboProduits.getItemCount() > 0) comboProduits.setSelectedIndex(0);
+        if (comboProduits.getItemCount() > 0)
+            comboProduits.setSelectedIndex(0);
         txtQuantite.requestFocus();
     }
 
     private void chargerProduits() {
-        try {
-            comboProduits.removeAllItems();
-            for (Produit p : new ProduitDAO().getAll()) comboProduits.addItem(p);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erreur chargement produits : " + e.getMessage());
-        }
+        comboProduits.removeAllItems();
+        for (Produit p : produitDAO.getAll())
+            comboProduits.addItem(p);
     }
 
-    // Getters pour le contrôleur
-    public Produit getProduitSelectionne() { return (Produit) comboProduits.getSelectedItem(); }
-    public String getQuantiteSaisie() { return txtQuantite.getText(); }
-    public boolean isEntreeSelectionnee() { return rbEntree.isSelected(); }
-    public String getMotifSaisi() { return txtMotif.getText(); }
+    public Produit getProduitSelectionne() {
+        return (Produit) comboProduits.getSelectedItem();
+    }
+
+    public String getQuantiteSaisie() {
+        return txtQuantite.getText();
+    }
+
+    public boolean isEntreeSelectionnee() {
+        return rbEntree.isSelected();
+    }
+
+    public String getMotifSaisi() {
+        return txtMotif.getText();
+    }
 }

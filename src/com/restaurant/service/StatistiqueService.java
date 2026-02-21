@@ -20,32 +20,48 @@ public class StatistiqueService {
     private LigneCommandeDAO ligneCommandeDAO;
     private ProduitDAO produitDAO;
 
-    public StatistiqueService() {
-        this.commandeDAO = new CommandeDAO();
-        this.ligneCommandeDAO = new LigneCommandeDAO();
-        this.produitDAO = new ProduitDAO();
+    public StatistiqueService(CommandeDAO commandeDAO, LigneCommandeDAO ligneCommandeDAO, ProduitDAO produitDAO) {
+        this.commandeDAO = commandeDAO;
+        this.ligneCommandeDAO = ligneCommandeDAO;
+        this.produitDAO = produitDAO;
     }
 
-    // Somme le total des commandes validées pour un jour donné
     public double getChiffreAffairesParJour(LocalDate date) throws SQLException {
         return getChiffreAffairesPeriode(date, date);
     }
 
-    // Somme le total des commandes validées sur une période
     public double getChiffreAffairesPeriode(LocalDate debut, LocalDate fin) throws SQLException {
         double ca = 0.0;
         for (Commande c : commandeDAO.findByPeriode(debut, fin)) {
-            if (c.getEtat() == EtatCommande.VALIDEE) ca += c.getTotal();
+            if (c.getEtat() == EtatCommande.VALIDEE)
+                ca += c.getTotal();
         }
         return ca;
     }
 
-    // Produits les plus vendus (quantité)
+    public Map<LocalDate, Double> getChiffreAffairesPeriodeJournalier(LocalDate debut, LocalDate fin)
+            throws SQLException {
+        Map<LocalDate, Double> map = new java.util.TreeMap<>();
+        LocalDate current = debut;
+        while (!current.isAfter(fin)) {
+            map.put(current, 0.0);
+            current = current.plusDays(1);
+        }
+        for (Commande c : commandeDAO.findByPeriode(debut, fin)) {
+            if (c.getEtat() == EtatCommande.VALIDEE) {
+                LocalDate date = c.getDate().toLocalDate();
+                map.put(date, map.getOrDefault(date, 0.0) + c.getTotal());
+            }
+        }
+        return map;
+    }
+
     public List<ProduitVendu> getTopProduitsQuantite(LocalDate debut, LocalDate fin, int limite) throws SQLException {
         Map<Integer, ProduitVendu> map = new HashMap<>();
 
         for (Commande c : commandeDAO.findByPeriode(debut, fin)) {
-            if (c.getEtat() != EtatCommande.VALIDEE) continue;
+            if (c.getEtat() != EtatCommande.VALIDEE)
+                continue;
             for (LigneCommande ligne : ligneCommandeDAO.findByCommande(c.getIdCmde())) {
                 ProduitVendu pv = map.computeIfAbsent(ligne.getIdPro(), id -> {
                     Produit p = produitDAO.getById(id);
@@ -63,32 +79,54 @@ public class StatistiqueService {
         return limite > 0 && result.size() > limite ? result.subList(0, limite) : result;
     }
 
-    // Produits les plus vendus (montant)
     public List<ProduitVendu> getTopProduitsMontant(LocalDate debut, LocalDate fin, int limite) throws SQLException {
         List<ProduitVendu> result = getTopProduitsQuantite(debut, fin, 0);
         result.sort((a, b) -> Double.compare(b.getMontantTotal(), a.getMontantTotal()));
         return limite > 0 && result.size() > limite ? result.subList(0, limite) : result;
     }
 
-    // Retourne les produits dont le stock est à 0
+    public Map<Integer, Integer> getHeuresDePointe(LocalDate debut, LocalDate fin) throws SQLException {
+        Map<Integer, Integer> heures = new HashMap<>();
+        for (Commande c : commandeDAO.findByPeriode(debut, fin)) {
+            if (c.getEtat() == EtatCommande.VALIDEE) {
+                int heure = c.getDate().getHour();
+                heures.put(heure, heures.getOrDefault(heure, 0) + 1);
+            }
+        }
+        return heures;
+    }
+
+    public Map<String, Double> getVentesParCaissier(LocalDate debut, LocalDate fin) throws SQLException {
+        Map<String, Double> ventes = new HashMap<>();
+        for (Commande c : commandeDAO.findByPeriode(debut, fin)) {
+            if (c.getEtat() == EtatCommande.VALIDEE) {
+                String dbNom = c.getNomUtil();
+                String nom = (dbNom != null && !dbNom.trim().isEmpty()) ? dbNom : "Inconnu";
+                ventes.put(nom, ventes.getOrDefault(nom, 0.0) + c.getTotal());
+            }
+        }
+        return ventes;
+    }
+
     public List<Produit> getProduitsEnRupture() throws SQLException {
         List<Produit> rupture = new ArrayList<>();
         for (Produit p : produitDAO.getAll()) {
-            if (p.getStockActu() <= 0) rupture.add(p);
+            if (p.getStockActu() <= 0)
+                rupture.add(p);
         }
         return rupture;
     }
 
-    // Retourne les produits dont le stock est inférieur ou égal au seuil d'alerte
     public List<Produit> getProduitsSousSeuilAlerte() throws SQLException {
         List<Produit> sousSeuil = new ArrayList<>();
         for (Produit p : produitDAO.getAll()) {
-            if (p.getStockActu() <= p.getSeuilAlerte()) sousSeuil.add(p);
+            if (p.getStockActu() > 0 && p.getStockActu() <= p.getSeuilAlerte()) {
+                sousSeuil.add(p);
+            }
         }
         return sousSeuil;
     }
 
-    // Calcule et retourne un ensemble de statistiques générales
     public StatistiquesGenerales getStatistiquesGenerales() throws SQLException {
         StatistiquesGenerales stats = new StatistiquesGenerales();
         LocalDate today = LocalDate.now();
@@ -96,14 +134,27 @@ public class StatistiqueService {
         stats.setNbProduits(produitDAO.getAll().size());
         stats.setNbProduitsRupture(getProduitsEnRupture().size());
         stats.setNbProduitsSousSeuil(getProduitsSousSeuilAlerte().size());
-        stats.setNbCommandesJour(commandeDAO.findByPeriode(today, today).size());
+
+        // Compter uniquement les commandes VALIDÉES pour le total journalier
+        int validToday = 0;
+        int encoursToday = 0;
+        for (Commande c : commandeDAO.findByPeriode(today, today)) {
+            if (c.getEtat() == EtatCommande.VALIDEE) {
+                validToday++;
+            } else if (c.getEtat() == EtatCommande.EN_COURS && c.getTotal() > 0) {
+                // On ne compte que les commandes "En cours" qui ont au moins un article (total
+                // > 0)
+                encoursToday++;
+            }
+        }
+
+        stats.setNbCommandesJour(validToday);
         stats.setCaJour(getChiffreAffairesParJour(today));
-        stats.setNbCommandesEnCours(commandeDAO.findByEtat(EtatCommande.EN_COURS).size());
+        stats.setNbCommandesEnCours(encoursToday);
 
         return stats;
     }
 
-    // Représente un produit avec ses totaux de vente (quantité et montant)
     public static class ProduitVendu {
         private Produit produit;
         private int quantiteTotale;
@@ -113,11 +164,25 @@ public class StatistiqueService {
             this.produit = produit;
         }
 
-        public void ajouterQuantite(int q) { this.quantiteTotale += q; }
-        public void ajouterMontant(double m) { this.montantTotal += m; }
-        public Produit getProduit() { return produit; }
-        public int getQuantiteTotale() { return quantiteTotale; }
-        public double getMontantTotal() { return montantTotal; }
+        public void ajouterQuantite(int q) {
+            this.quantiteTotale += q;
+        }
+
+        public void ajouterMontant(double m) {
+            this.montantTotal += m;
+        }
+
+        public Produit getProduit() {
+            return produit;
+        }
+
+        public int getQuantiteTotale() {
+            return quantiteTotale;
+        }
+
+        public double getMontantTotal() {
+            return montantTotal;
+        }
 
         @Override
         public String toString() {
@@ -125,22 +190,56 @@ public class StatistiqueService {
         }
     }
 
-    // Contient les indicateurs clés affichés dans l'onglet Statistiques générales
     public static class StatistiquesGenerales {
         private int nbProduits, nbProduitsRupture, nbProduitsSousSeuil, nbCommandesJour, nbCommandesEnCours;
         private double caJour;
 
-        public int getNbProduits() { return nbProduits; }
-        public void setNbProduits(int v) { this.nbProduits = v; }
-        public int getNbProduitsRupture() { return nbProduitsRupture; }
-        public void setNbProduitsRupture(int v) { this.nbProduitsRupture = v; }
-        public int getNbProduitsSousSeuil() { return nbProduitsSousSeuil; }
-        public void setNbProduitsSousSeuil(int v) { this.nbProduitsSousSeuil = v; }
-        public int getNbCommandesJour() { return nbCommandesJour; }
-        public void setNbCommandesJour(int v) { this.nbCommandesJour = v; }
-        public double getCaJour() { return caJour; }
-        public void setCaJour(double v) { this.caJour = v; }
-        public int getNbCommandesEnCours() { return nbCommandesEnCours; }
-        public void setNbCommandesEnCours(int v) { this.nbCommandesEnCours = v; }
+        public int getNbProduits() {
+            return nbProduits;
+        }
+
+        public void setNbProduits(int v) {
+            this.nbProduits = v;
+        }
+
+        public int getNbProduitsRupture() {
+            return nbProduitsRupture;
+        }
+
+        public void setNbProduitsRupture(int v) {
+            this.nbProduitsRupture = v;
+        }
+
+        public int getNbProduitsSousSeuil() {
+            return nbProduitsSousSeuil;
+        }
+
+        public void setNbProduitsSousSeuil(int v) {
+            this.nbProduitsSousSeuil = v;
+        }
+
+        public int getNbCommandesJour() {
+            return nbCommandesJour;
+        }
+
+        public void setNbCommandesJour(int v) {
+            this.nbCommandesJour = v;
+        }
+
+        public double getCaJour() {
+            return caJour;
+        }
+
+        public void setCaJour(double v) {
+            this.caJour = v;
+        }
+
+        public int getNbCommandesEnCours() {
+            return nbCommandesEnCours;
+        }
+
+        public void setNbCommandesEnCours(int v) {
+            this.nbCommandesEnCours = v;
+        }
     }
 }

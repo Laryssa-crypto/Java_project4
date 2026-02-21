@@ -9,7 +9,6 @@ public class Produit {
     private int stockActu;
     private int seuilAlerte;
     
-    // Constructeurs
     public Produit() {}
     
     public Produit(int idPro, String nomPro, int idCat, double prixVente, 
@@ -31,7 +30,6 @@ public class Produit {
         this.seuilAlerte = seuilAlerte;
     }
     
-    // Getters et Setters
     public int getIdPro() {
         return idPro;
     }

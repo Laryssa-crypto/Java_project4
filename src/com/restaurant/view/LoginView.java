@@ -28,8 +28,10 @@ public class LoginView extends JFrame {
     private void defineIcon() {
         try {
             ImageIcon icon = new ImageIcon(getClass().getResource("/icon.png"));
-            if (icon.getImage() != null) setIconImage(icon.getImage());
-        } catch (Exception e) {}
+            if (icon.getImage() != null)
+                setIconImage(icon.getImage());
+        } catch (NullPointerException e) {
+        }
     }
 
     public LoginView(LoginController controller) {
@@ -50,20 +52,17 @@ public class LoginView extends JFrame {
     }
 
     private void initComposants() {
-        // --- Titre Logo ---
         JLabel lblLogo = new JLabel("GESTION RESTAURANT", SwingConstants.CENTER);
-        lblLogo.setFont(new Font("SansSerif", Font.BOLD, 22));
+        lblLogo.setFont(DesignSystem.FONT_TITLE);
         lblLogo.setForeground(DesignSystem.PRIMARY);
         lblLogo.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         add(lblLogo, BorderLayout.NORTH);
 
-        // --- Panel Connexion ---
         panelConnexion = new JPanel(new GridBagLayout());
         panelConnexion.setBackground(Color.WHITE);
         panelConnexion.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(226, 232, 240), 1),
-            BorderFactory.createEmptyBorder(20, 20, 20, 20)
-        ));
+                BorderFactory.createLineBorder(DesignSystem.BORDER, 1),
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)));
 
         txtNomUtil = new JTextField(15);
         txtMotDePasse = new JPasswordField(15);
@@ -85,22 +84,32 @@ public class LoginView extends JFrame {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
 
-        gbc.gridx = 0; gbc.gridy = 0; panelConnexion.add(new JLabel("Nom d'utilisateur:"), gbc);
-        gbc.gridx = 1; panelConnexion.add(txtNomUtil, gbc);
-        gbc.gridx = 0; gbc.gridy = 1; panelConnexion.add(new JLabel("Mot de passe:"), gbc);
-        gbc.gridx = 1; panelConnexion.add(txtMotDePasse, gbc);
-        gbc.gridx = 1; gbc.gridy = 2; panelConnexion.add(chkSeSouvenir, gbc);
-        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2; gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panelConnexion.add(new JLabel("Nom d'utilisateur:"), gbc);
+        gbc.gridx = 1;
+        panelConnexion.add(txtNomUtil, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panelConnexion.add(new JLabel("Mot de passe:"), gbc);
+        gbc.gridx = 1;
+        panelConnexion.add(txtMotDePasse, gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        panelConnexion.add(chkSeSouvenir, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
         panelConnexion.add(btnConnexion, gbc);
-        gbc.gridy = 4; panelConnexion.add(btnCreerCompte, gbc);
+        gbc.gridy = 4;
+        panelConnexion.add(btnCreerCompte, gbc);
 
-        // --- Panel Création de compte ---
         panelCreation = new JPanel(new GridBagLayout());
         panelCreation.setBackground(DesignSystem.CARD_BG);
         panelCreation.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(226, 232, 240), 1),
-            BorderFactory.createEmptyBorder(20, 20, 20, 20)
-        ));
+                BorderFactory.createLineBorder(DesignSystem.BORDER, 1),
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)));
 
         txtNomUtilNew = new JTextField(15);
         txtMotDePasseNew = new JPasswordField(15);
@@ -116,39 +125,49 @@ public class LoginView extends JFrame {
         btnAnnulerCreation.setForeground(DesignSystem.DANGER);
         btnAnnulerCreation.setBorder(null);
 
-        gbc.gridwidth = 1; gbc.anchor = GridBagConstraints.WEST;
-        gbc.gridx = 0; gbc.gridy = 0; panelCreation.add(new JLabel("Nom d'utilisateur:"), gbc);
-        gbc.gridx = 1; panelCreation.add(txtNomUtilNew, gbc);
-        gbc.gridx = 0; gbc.gridy = 1; panelCreation.add(new JLabel("Mot de passe:"), gbc);
-        gbc.gridx = 1; panelCreation.add(txtMotDePasseNew, gbc);
-        gbc.gridx = 0; gbc.gridy = 2; panelCreation.add(new JLabel("Confirmation:"), gbc);
-        gbc.gridx = 1; panelCreation.add(txtConfirmationMdp, gbc);
-        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2; gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panelCreation.add(new JLabel("Nom d'utilisateur:"), gbc);
+        gbc.gridx = 1;
+        panelCreation.add(txtNomUtilNew, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panelCreation.add(new JLabel("Mot de passe:"), gbc);
+        gbc.gridx = 1;
+        panelCreation.add(txtMotDePasseNew, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panelCreation.add(new JLabel("Confirmation:"), gbc);
+        gbc.gridx = 1;
+        panelCreation.add(txtConfirmationMdp, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
         panelCreation.add(btnValiderCreation, gbc);
-        gbc.gridy = 4; panelCreation.add(btnAnnulerCreation, gbc);
+        gbc.gridy = 4;
+        panelCreation.add(btnAnnulerCreation, gbc);
 
-        // Label de message (succès ou erreur)
         lblMessage = new JLabel(" ");
         lblMessage.setFont(DesignSystem.FONT_BODY);
         lblMessage.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     private void initLayout() {
-        // Le layout de la fenêtre est déjà BorderLayout par défaut, mais on le sécurise
         setLayout(new BorderLayout());
-        
-        // Panel central utilisant CardLayout pour basculer entre login et création
+
         JPanel panelCards = new JPanel(new CardLayout());
         panelCards.setOpaque(false);
         panelCards.add(panelConnexion, "CONNEXION");
         panelCards.add(panelCreation, "CREATION");
-        
-        // Conteneur pour centrer le CardLayout (évite que les formulaires ne prennent toute la largeur)
+
         JPanel centerWrapper = new JPanel(new GridBagLayout());
         centerWrapper.setOpaque(false);
         centerWrapper.add(panelCards);
-        
-        add(panelCards, BorderLayout.CENTER); // On laisse le CardLayout prendre le centre
+
+        add(panelCards, BorderLayout.CENTER);
         add(lblMessage, BorderLayout.SOUTH);
     }
 
@@ -158,15 +177,18 @@ public class LoginView extends JFrame {
         btnValiderCreation.addActionListener(e -> creerCompte());
         btnAnnulerCreation.addActionListener(e -> afficherPanelConnexion());
 
-        // Valider avec la touche Entrée
         txtMotDePasse.addKeyListener(new KeyAdapter() {
-            @Override public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) seConnecter();
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER)
+                    seConnecter();
             }
         });
         txtConfirmationMdp.addKeyListener(new KeyAdapter() {
-            @Override public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) creerCompte();
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER)
+                    creerCompte();
             }
         });
     }
@@ -221,17 +243,26 @@ public class LoginView extends JFrame {
         txtConfirmationMdp.setText("");
     }
 
-    public boolean isSeSouvenir() { return chkSeSouvenir.isSelected(); }
-    public void setSeSouvenir(boolean b) { chkSeSouvenir.setSelected(b); }
-    public String getNomUtil() { return txtNomUtil.getText().trim(); }
-    public void setNomUtil(String nom) { txtNomUtil.setText(nom); }
+    public boolean isSeSouvenir() {
+        return chkSeSouvenir.isSelected();
+    }
 
-    // Affiche un message de succès (vert)
+    public void setSeSouvenir(boolean b) {
+        chkSeSouvenir.setSelected(b);
+    }
+
+    public String getNomUtil() {
+        return txtNomUtil.getText().trim();
+    }
+
+    public void setNomUtil(String nom) {
+        txtNomUtil.setText(nom);
+    }
+
     public void afficherMessage(String message) {
         afficherMessage(message, DesignSystem.SUCCESS);
     }
 
-    // Affiche un message d'erreur (rouge)
     public void afficherErreur(String erreur) {
         afficherMessage(erreur, DesignSystem.DANGER);
     }
@@ -239,7 +270,6 @@ public class LoginView extends JFrame {
     private void afficherMessage(String message, Color couleur) {
         lblMessage.setText(message);
         lblMessage.setForeground(couleur);
-        // Efface le message de succès après 3 secondes
         if (couleur == DesignSystem.SUCCESS && !message.trim().isEmpty()) {
             Timer timer = new Timer(3000, e -> lblMessage.setText(" "));
             timer.setRepeats(false);

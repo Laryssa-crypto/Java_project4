@@ -11,10 +11,8 @@ public class LigneCommande {
     private double prixUnit;
     private double montant;
     
-    // Référence au produit (pour affichage)
     private Produit produit;
     
-    // Constructeurs
     public LigneCommande() {}
     
     public LigneCommande(int idLig, int idCmde, int idPro, int qteLig, double prixUnit) {
@@ -42,7 +40,6 @@ public class LigneCommande {
         this.montant = quantite * prixUnit;
     }
     
-    // Getters et Setters
     public int getIdLig() {
         return idLig;
     }
@@ -106,7 +103,6 @@ public class LigneCommande {
         }
     }
     
-    // Méthode pour recalculer le montant
     private void calculerMontant() {
         this.montant = this.qteLig * this.prixUnit;
     }

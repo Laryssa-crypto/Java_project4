@@ -1,60 +1,58 @@
-# NetBeans specific
-nbproject/private/
+# ─── Compiled Java ───────────────────────────────────
+*.class
+bin/
 build/
-nbbuild/
 dist/
+
+# ─── NetBeans ─────────────────────────────────────────
+nbproject/private/
+nbbuild/
 nbdist/
-nbactions.xml
 nb-configuration.xml
 
-# Compiled class files
-*.class
+# ─── IDEs ─────────────────────────────────────────────
+# IntelliJ IDEA
+.idea/
+*.iml
 
-# Log files
-*.log
+# Eclipse
+.classpath
+.project
+.settings/
 
-# BlueJ files
-*.ctxt
+# VS Code
+.vscode/
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.ear
-
-# Virtual machines specific files #
-.venv
-.flaskenv
-
-# OS specific files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Windows specifics
-$RECYCLE.BIN/
-desktop.ini
-
-# Linux specifics
+# ─── OS artefacts Linux ───────────────────────────────
 *~
-.fuse_hidden*
-.directory
-.Trash-*
 .nfs*
 
-# IDE Specifics
-.idea/
-.vscode/
-*.project
-*.classpath
-*.settings/
+# ─── OS artefacts Windows ────────────────────────────-
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
 
-# Specific project files
-/tmp/
-/sources.txt
+# ─── OS artefacts macOS ───────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ─── Application ──────────────────────────────────────
+# Credentials — NE JAMAIS COMMITER
+config.properties
+
+# Logs
+logs/
+*.log
+
+# Generated Receipts (PDF)
+Recus/
+
+# SQL Backups and generated files
+*.sql
+sources.txt
+DbMigrate.*

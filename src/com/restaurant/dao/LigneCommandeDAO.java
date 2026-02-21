@@ -1,7 +1,6 @@
 package com.restaurant.dao;
 
 import com.restaurant.model.LigneCommande;
-import com.restaurant.model.Produit;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +9,6 @@ public class LigneCommandeDAO {
 
     private ProduitDAO produitDAO = new ProduitDAO();
 
-    // Construit une LigneCommande depuis un ResultSet et charge le produit associé
     private LigneCommande fromResultSet(ResultSet rs) throws SQLException {
         LigneCommande ligne = new LigneCommande();
         ligne.setIdLig(rs.getInt("id_lig"));
@@ -38,7 +36,8 @@ public class LigneCommandeDAO {
             if (rs.next()) {
                 ligne.setIdLig(rs.getInt(1));
                 int id = rs.getInt(1);
-                rs.close(); stmt.close();
+                rs.close();
+                stmt.close();
                 return id;
             }
             rs.close();
@@ -54,11 +53,11 @@ public class LigneCommandeDAO {
         stmt.setInt(1, id);
         ResultSet rs = stmt.executeQuery();
         LigneCommande l = rs.next() ? fromResultSet(rs) : null;
-        rs.close(); stmt.close();
+        rs.close();
+        stmt.close();
         return l;
     }
 
-    // Retourne toutes les lignes d'une commande donnée
     public List<LigneCommande> findByCommande(int idCommande) throws SQLException {
         List<LigneCommande> lignes = new ArrayList<>();
         String sql = "SELECT * FROM LIG_COMMANDE WHERE id_cmde = ? ORDER BY id_lig";
@@ -66,8 +65,10 @@ public class LigneCommandeDAO {
         PreparedStatement stmt = conn.prepareStatement(sql);
         stmt.setInt(1, idCommande);
         ResultSet rs = stmt.executeQuery();
-        while (rs.next()) lignes.add(fromResultSet(rs));
-        rs.close(); stmt.close();
+        while (rs.next())
+            lignes.add(fromResultSet(rs));
+        rs.close();
+        stmt.close();
         return lignes;
     }
 
@@ -104,7 +105,6 @@ public class LigneCommandeDAO {
         return ok;
     }
 
-    // Calcule le total (somme des montants) d'une commande
     public double calculerTotalCommande(int idCommande) throws SQLException {
         String sql = "SELECT SUM(montant) FROM LIG_COMMANDE WHERE id_cmde = ?";
         Connection conn = ConnectionDB.getConnection();
@@ -112,7 +112,8 @@ public class LigneCommandeDAO {
         stmt.setInt(1, idCommande);
         ResultSet rs = stmt.executeQuery();
         double total = rs.next() ? rs.getDouble(1) : 0.0;
-        rs.close(); stmt.close();
+        rs.close();
+        stmt.close();
         return total;
     }
 }

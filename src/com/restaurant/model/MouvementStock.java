@@ -23,7 +23,6 @@ public class MouvementStock {
     public MouvementStock() {
     }
 
-    // Getters et Setters
     public int getId() {
         return id;
     }
@@ -72,4 +71,11 @@ public class MouvementStock {
         this.motif = motif;
     }
 
+    public String getReference() {
+        if (type == com.restaurant.model.enums.TypeMouvement.ENTREE) {
+            return "FAC-ACH-" + String.format("%04d", id);
+        } else {
+            return "FAC-VEN-" + String.format("%04d", id);
+        }
+    }
 }

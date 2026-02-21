@@ -6,10 +6,12 @@ import com.restaurant.model.enums.TypeMouvement;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class MouvementStockDAO {
+    private static final Logger logger = LogManager.getLogger(MouvementStockDAO.class);
 
-    // Enregistre un mouvement de stock (entrée ou sortie)
     public boolean ajouter(MouvementStock mvt) {
         String sql = "INSERT INTO MVT_STOCK (id_pro, TYPE, qte_stock, DATE, motif) VALUES (?, ?, ?, ?, ?)";
         Connection conn = ConnectionDB.getConnection();
@@ -23,25 +25,25 @@ public class MouvementStockDAO {
 
             if (pstmt.executeUpdate() > 0) {
                 ResultSet rs = pstmt.getGeneratedKeys();
-                if (rs.next()) mvt.setId(rs.getInt(1));
+                if (rs.next())
+                    mvt.setId(rs.getInt(1));
                 return true;
             }
         } catch (SQLException e) {
-            System.err.println("Erreur ajout mouvement stock : " + e.getMessage());
+            logger.warn("Erreur ajout mouvement stock : " + e.getMessage());
         }
         return false;
     }
 
-    // Retourne l'historique complet des mouvements, du plus récent au plus ancien
     public List<MouvementStock> listerHistorique() {
         List<MouvementStock> liste = new ArrayList<>();
         String sql = "SELECT m.*, p.nom_pro FROM MVT_STOCK m " +
-                     "JOIN PRODUIT p ON m.id_pro = p.id_pro " +
-                     "ORDER BY m.DATE DESC";
+                "JOIN PRODUIT p ON m.id_pro = p.id_pro " +
+                "ORDER BY m.DATE DESC";
 
         Connection conn = ConnectionDB.getConnection();
         try (Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+                ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
                 MouvementStock mvt = new MouvementStock();
@@ -59,7 +61,7 @@ public class MouvementStockDAO {
                 liste.add(mvt);
             }
         } catch (SQLException e) {
-            System.err.println("Erreur lecture historique stock : " + e.getMessage());
+            logger.warn("Erreur lecture historique stock : " + e.getMessage());
         }
         return liste;
     }

@@ -57,13 +57,7 @@ CREATE TABLE IF NOT EXISTS UTILISATEUR(
     id_util INT NOT NULL AUTO_INCREMENT,
     nom_util VARCHAR(50) NOT NULL UNIQUE,
     mdp VARCHAR(256) NOT NULL,
+    role VARCHAR(15) NOT NULL DEFAULT 'CAISSIER' CHECK(role IN ('ADMIN', 'CAISSIER')),
     PRIMARY KEY(id_util)
 );
 
--- 3. Insertion de données de test (optionnel)
-INSERT INTO UTILISATEUR (nom_util, mdp) VALUES ('admin', 'admin123');
-INSERT INTO CATEGORIE (libelle_cat) VALUES ('Boissons'), ('Plats'), ('Desserts');
-INSERT INTO PRODUIT (nom_pro, id_cat, prix_vente, stock_actu, seuil_alerte) VALUES 
-('Coca-Cola', 1, 1.50, 50, 10),
-('Pizza Margherita', 2, 8.50, 20, 5),
-('Tiramisu', 3, 4.50, 15, 3);

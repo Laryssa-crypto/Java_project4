@@ -1,32 +1,40 @@
 package com.restaurant.controller;
 
-import com.restaurant.view.StockView;
-import com.restaurant.model.Produit;
+import com.restaurant.dao.MouvementStockDAO;
+import com.restaurant.dao.ProduitDAO;
 import com.restaurant.model.MouvementStock;
+import com.restaurant.model.Produit;
 import com.restaurant.model.enums.TypeMouvement;
 import com.restaurant.service.StockService;
+import com.restaurant.view.StockView;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import javax.swing.JOptionPane;
 
 public class StockController {
 
     private final StockView view;
-    private final StockService service = new StockService();
+    private final StockService service;
 
     public StockController(StockView view) {
         this.view = view;
+        ProduitDAO pDao       = new ProduitDAO();
+        MouvementStockDAO mDao = new MouvementStockDAO();
+        this.service = new StockService(pDao, mDao);
     }
 
-    // Lit les données de la vue, crée le mouvement et délègue au service
     public void enregistrerMouvement() {
+        int qte;
         try {
-            int qte;
-            try {
-                qte = Integer.parseInt(view.getQuantiteSaisie());
-            } catch (NumberFormatException e) {
-                throw new Exception("La quantité doit être un nombre entier valide !");
-            }
+            qte = Integer.parseInt(view.getQuantiteSaisie());
+            if (qte <= 0) throw new NumberFormatException();
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(view, "La quantité doit être un entier > 0",
+                "Saisie invalide", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
+        try {
             MouvementStock mvt = new MouvementStock();
             mvt.setProduit(view.getProduitSelectionne());
             mvt.setQuantite(qte);
@@ -35,21 +43,22 @@ public class StockController {
             mvt.setDate(LocalDate.now());
 
             service.traiterMouvement(mvt);
-            
-            // Alerte de stock immédiate
+
             Produit p = mvt.getProduit();
             if (p.getStockActu() == 0) {
-                JOptionPane.showMessageDialog(view, "ALERTE : Le produit " + p.getNomPro() + " est en RUPTURE DE STOCK !", "Rupture de Stock", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(view, "RUPTURE : " + p.getNomPro() + " est en rupture de stock !",
+                    "Rupture de stock", JOptionPane.ERROR_MESSAGE);
             } else if (p.isSousSeuilAlerte()) {
-                JOptionPane.showMessageDialog(view, "Attention : Le stock de " + p.getNomPro() + " est faible (" + p.getStockActu() + ")", "Seuil d'alerte atteint", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(view, "Stock faible : " + p.getNomPro() + " (" + p.getStockActu() + ")",
+                    "Seuil d'alerte", JOptionPane.WARNING_MESSAGE);
             }
 
             JOptionPane.showMessageDialog(view, "Mouvement enregistré avec succès !");
             view.resetChamps();
             view.actualiserHistorique();
 
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(view, "Erreur : " + e.getMessage(), "Échec", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(view, e.getMessage(), "Erreur base de données", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

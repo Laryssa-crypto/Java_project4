@@ -1,5 +1,7 @@
 package com.restaurant.model;
 
+import com.restaurant.model.enums.Role;
+
 /**
  * Classe représentant un utilisateur du système
  */
@@ -7,22 +9,23 @@ public class Utilisateur {
     private int idUtil;
     private String nomUtil;
     private String mdp;
+    private Role role;
     
-    // Constructeurs
     public Utilisateur() {}
     
-    public Utilisateur(int idUtil, String nomUtil, String mdp) {
+    public Utilisateur(int idUtil, String nomUtil, String mdp, Role role) {
         this.idUtil = idUtil;
         this.nomUtil = nomUtil;
         this.mdp = mdp;
+        this.role = role;
     }
     
-    public Utilisateur(String nomUtil, String mdp) {
+    public Utilisateur(String nomUtil, String mdp, Role role) {
         this.nomUtil = nomUtil;
         this.mdp = mdp;
+        this.role = role;
     }
     
-    // Getters et Setters
     public int getIdUtil() {
         return idUtil;
     }
@@ -45,6 +48,14 @@ public class Utilisateur {
     
     public void setMdp(String mdp) {
         this.mdp = mdp;
+    }
+    
+    public Role getRole() {
+        return role;
+    }
+    
+    public void setRole(Role role) {
+        this.role = role;
     }
     
     @Override

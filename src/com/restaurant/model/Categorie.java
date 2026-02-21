@@ -13,7 +13,6 @@ public class Categorie {
     private int idCat;
     private String libelleCat;
     
-    // Constructeurs
     public Categorie() {}
     
     public Categorie(int idCat, String libelleCat) {
@@ -25,7 +24,6 @@ public class Categorie {
         this.libelleCat = libelleCat;
     }
     
-    // Getters et Setters
     public int getIdCat() {
         return idCat;
     }

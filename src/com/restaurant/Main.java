@@ -1,14 +1,20 @@
 package com.restaurant;
 
 import com.restaurant.controller.LoginController;
+import com.restaurant.utils.DatabaseUpdater;
+import com.restaurant.view.SplashScreen;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 public class Main {
 
     public static void main(String[] args) {
+        DatabaseUpdater.updateSchema();
         setupLookAndFeel();
-        SwingUtilities.invokeLater(() -> new LoginController().afficherLogin());
+        SwingUtilities.invokeLater(() -> {
+            SplashScreen splash = new SplashScreen();
+            splash.afficherEtAnimer(2000, () -> new LoginController().afficherLogin());
+        });
     }
 
     private static void setupLookAndFeel() {
@@ -19,8 +25,8 @@ public class Main {
                     break;
                 }
             }
-        } catch (Exception e) {
-            System.err.println("Style Nimbus non disponible.");
+        } catch (javax.swing.UnsupportedLookAndFeelException | ClassNotFoundException
+                | InstantiationException | IllegalAccessException e) {
         }
     }
 }

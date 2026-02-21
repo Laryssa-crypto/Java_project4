@@ -12,8 +12,10 @@ public class ProduitController {
     private CategorieService categorieService;
 
     public ProduitController() {
-        this.produitService = new ProduitService();
-        this.categorieService = new CategorieService();
+        com.restaurant.dao.ProduitDAO pDao = new com.restaurant.dao.ProduitDAO();
+        com.restaurant.dao.CategorieDAO cDao = new com.restaurant.dao.CategorieDAO();
+        this.produitService = new ProduitService(pDao);
+        this.categorieService = new CategorieService(cDao);
     }
 
     public boolean ajouterProduit(String nom, int idCat, double prix, int stock, int seuil) {
@@ -24,7 +26,7 @@ public class ProduitController {
         return produitService.modifierProduit(idPro, nom, idCat, prix, stock, seuil);
     }
 
-    public boolean supprimerProduit(int idPro) {
+    public boolean supprimerProduit(int idPro) throws com.restaurant.dao.ProduitDAO.ProduitLieACommandeException {
         return produitService.supprimerProduit(idPro);
     }
 
@@ -34,6 +36,10 @@ public class ProduitController {
 
     public List<Produit> rechercherProduits(String nom) {
         return produitService.rechercherProduits(nom);
+    }
+
+    public Produit getProduitById(int idPro) {
+        return produitService.getProduitById(idPro);
     }
 
     public List<Produit> getProduitsParCategorie(int idCat) {
@@ -62,5 +68,34 @@ public class ProduitController {
 
     public Categorie getCategorieById(int idCat) {
         return categorieService.getCategorieById(idCat);
+    }
+
+    public void exporterCSV(String path) {
+        List<Produit> produits = getAllProduits();
+        if (com.restaurant.service.CsvService.exporterProduits(path, produits)) {
+            javax.swing.JOptionPane.showMessageDialog(null, "Export CSV réussi !", "Succès",
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(null, "Erreur lors de l'export CSV.", "Erreur",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void importerCSV(String path) {
+        try {
+            List<Produit> importes = com.restaurant.service.CsvService.importerProduits(path);
+            int ajoutes = 0;
+            for (Produit p : importes) {
+                if (ajouterProduit(p.getNomPro(), p.getIdCat(), p.getPrixVente(), p.getStockActu(),
+                        p.getSeuilAlerte())) {
+                    ajoutes++;
+                }
+            }
+            javax.swing.JOptionPane.showMessageDialog(null, "Import terminé : " + ajoutes + " produits ajoutés.",
+                    "Succès", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(null, "Erreur lors de l'import : " + e.getMessage(), "Erreur",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
