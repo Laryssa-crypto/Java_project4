@@ -1,7 +1,7 @@
 package com.restaurant;
 
 import com.restaurant.controller.LoginController;
-import com.restaurant.utils.DatabaseUpdater;
+
 import com.restaurant.view.SplashScreen;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -9,7 +9,7 @@ import javax.swing.UIManager;
 public class Main {
 
     public static void main(String[] args) {
-        DatabaseUpdater.updateSchema();
+
         setupLookAndFeel();
         SwingUtilities.invokeLater(() -> {
             SplashScreen splash = new SplashScreen();

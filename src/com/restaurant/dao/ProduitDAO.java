@@ -156,7 +156,7 @@ public class ProduitDAO {
     // Récupère les produits en rupture de stock/seuil
     public List<Produit> getProduitsSousSeuilAlerte() {
         List<Produit> produits = new ArrayList<>();
-        String sql = SELECT_BASE + "WHERE p.stock_actu < p.seuil_alerte ORDER BY p.stock_actu";
+        String sql = SELECT_BASE + "WHERE p.stock_actu > 0 AND p.stock_actu <= p.seuil_alerte ORDER BY p.stock_actu";
         Connection conn = ConnectionDB.getConnection();
         try (Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql)) {

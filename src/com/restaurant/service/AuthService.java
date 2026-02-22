@@ -20,7 +20,7 @@ public class AuthService {
         return utilisateurDAO.authenticate(nomUtil.trim(), hashedMdp);
     }
 
-    // Crée un nouvel utilisateur de type CAISSIER
+    // Crée un nouvel utilisateur de type ADMIN
     public boolean creerUtilisateur(String nomUtil, String motDePasse) throws SQLException {
         String trimmedNom = nomUtil.trim();
         if (trimmedNom.isEmpty() || trimmedNom.length() > 50) {
@@ -30,7 +30,7 @@ public class AuthService {
             throw new SQLException("Ce nom d'utilisateur existe déjà");
         }
         String hashedMdp = PasswordUtils.hashPassword(motDePasse);
-        Utilisateur utilisateur = new Utilisateur(trimmedNom, hashedMdp, Role.CAISSIER);
+        Utilisateur utilisateur = new Utilisateur(trimmedNom, hashedMdp, Role.ADMIN);
         int id = utilisateurDAO.create(utilisateur);
         return id > 0;
     }

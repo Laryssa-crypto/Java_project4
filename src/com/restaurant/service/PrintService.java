@@ -28,26 +28,45 @@ public class PrintService {
                 g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
 
                 int y = 50;
-                int x = 50;
-                g2d.setFont(new Font("Monospaced", Font.BOLD, 14));
-                g2d.drawString("--- REÇU CLIENT ---", x, y);
-                y += 20;
+                int x = 10;
+                g2d.setFont(new Font("Monospaced", Font.BOLD, 16));
+                g2d.drawString("*** MON RESTAURANT ***", x + 20, y);
+                y += 25;
                 g2d.setFont(new Font("Monospaced", Font.PLAIN, 12));
-                g2d.drawString("Commande #" + commande.getIdCmde() + " - " + commande.getDate(), x, y);
-                y += 20;
-                g2d.drawString("-------------------------------------", x, y);
-                y += 20;
+                g2d.drawString("Reçu Commande #" + commande.getIdCmde(), x, y);
+                y += 15;
+                g2d.drawString("Date: " + commande.getDate(), x, y);
+                y += 15;
+                String caissierName = commande.getNomUtil() != null ? commande.getNomUtil() : "Inconnu";
+                g2d.drawString("Caissier: " + caissierName, x, y);
+                y += 15;
+                g2d.drawString("---------------------------------", x, y);
+                y += 15;
+
+                g2d.setFont(new Font("Monospaced", Font.BOLD, 12));
+                g2d.drawString(String.format("%-15s %3s %9s", "Article", "Qté", "Montant"), x, y);
+                y += 15;
+                g2d.setFont(new Font("Monospaced", Font.PLAIN, 12));
+                g2d.drawString("---------------------------------", x, y);
+                y += 15;
+
                 for (LigneCommande l : lignes) {
-                    String ligneTxt = l.getProduit().getNomPro() + " x" + l.getQteLig() + " = "
-                            + String.format("%.2f", l.getMontant());
+                    String nomProd = l.getProduit().getNomPro();
+                    if (nomProd.length() > 14)
+                        nomProd = nomProd.substring(0, 11) + "...";
+                    String ligneTxt = String.format("%-15s %3d %9.2f", nomProd, l.getQteLig(), l.getMontant());
                     g2d.drawString(ligneTxt, x, y);
                     y += 15;
                 }
-                y += 10;
-                g2d.drawString("-------------------------------------", x, y);
+
+                y += 5;
+                g2d.drawString("---------------------------------", x, y);
                 y += 20;
                 g2d.setFont(new Font("Monospaced", Font.BOLD, 14));
-                g2d.drawString("TOTAL: " + String.format("%.2f FCFA", commande.getTotal()), x, y);
+                g2d.drawString("TOTAL NET: " + String.format("%.2f FCFA", commande.getTotal()), x, y);
+                y += 30;
+                g2d.setFont(new Font("Monospaced", Font.ITALIC, 10));
+                g2d.drawString("Merci de votre visite !", x + 25, y);
 
                 return PAGE_EXISTS;
             }

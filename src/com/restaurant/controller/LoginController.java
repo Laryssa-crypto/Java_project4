@@ -21,6 +21,12 @@ public class LoginController {
         this.authService = new AuthService(new com.restaurant.dao.UtilisateurDAO());
         this.loginView = new LoginView(this);
         chargerPreference();
+        try {
+            boolean hasUsers = !new com.restaurant.dao.UtilisateurDAO().findAll().isEmpty();
+            loginView.setCreerCompteVisible(!hasUsers);
+        } catch (SQLException e) {
+            loginView.setCreerCompteVisible(false);
+        }
     }
 
     private void chargerPreference() {

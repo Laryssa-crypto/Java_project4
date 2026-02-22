@@ -13,6 +13,7 @@ public class AdminController {
 
     private AdminView adminView;
     private UtilisateurDAO utilisateurDAO;
+    private Utilisateur utilisateurConnecte;
 
     public AdminController() {
         this.utilisateurDAO = new UtilisateurDAO();
@@ -20,6 +21,10 @@ public class AdminController {
 
     public void setView(AdminView view) {
         this.adminView = view;
+    }
+
+    public void setUtilisateurConnecte(Utilisateur user) {
+        this.utilisateurConnecte = user;
     }
 
     // Charge tous les utilisateurs dans la vue
@@ -89,6 +94,10 @@ public class AdminController {
 
     // Supprime un utilisateur par son ID
     public void supprimerUtilisateur(int idUtil) {
+        if (utilisateurConnecte != null && utilisateurConnecte.getIdUtil() == idUtil) {
+            afficherErreur("Vous ne pouvez pas vous supprimer vous-même.");
+            return;
+        }
         try {
             if (utilisateurDAO.delete(idUtil)) {
                 if (adminView != null) {

@@ -18,10 +18,10 @@ public class UtilisateurDAO {
             try {
                 u.setRole(Role.valueOf(roleStr.toUpperCase()));
             } catch (IllegalArgumentException e) {
-                u.setRole(Role.CAISSIER);
+                u.setRole(Role.ADMIN);
             }
         } else {
-            u.setRole(Role.CAISSIER);
+            u.setRole(Role.ADMIN);
         }
         return u;
     }
@@ -34,7 +34,7 @@ public class UtilisateurDAO {
 
         stmt.setString(1, utilisateur.getNomUtil());
         stmt.setString(2, utilisateur.getMdp());
-        stmt.setString(3, utilisateur.getRole() != null ? utilisateur.getRole().name() : Role.CAISSIER.name());
+        stmt.setString(3, utilisateur.getRole() != null ? utilisateur.getRole().name() : Role.ADMIN.name());
 
         if (stmt.executeUpdate() > 0) {
             ResultSet rs = stmt.getGeneratedKeys();
@@ -108,7 +108,7 @@ public class UtilisateurDAO {
         PreparedStatement stmt = conn.prepareStatement(sql);
         stmt.setString(1, utilisateur.getNomUtil());
         stmt.setString(2, utilisateur.getMdp());
-        stmt.setString(3, utilisateur.getRole() != null ? utilisateur.getRole().name() : Role.CAISSIER.name());
+        stmt.setString(3, utilisateur.getRole() != null ? utilisateur.getRole().name() : Role.ADMIN.name());
         stmt.setInt(4, utilisateur.getIdUtil());
         boolean ok = stmt.executeUpdate() > 0;
         stmt.close();

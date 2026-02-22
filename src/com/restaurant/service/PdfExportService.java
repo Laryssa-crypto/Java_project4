@@ -19,16 +19,48 @@ public class PdfExportService {
         try {
             PdfWriter.getInstance(document, new FileOutputStream(path));
             document.open();
-            document.add(new Paragraph("RECU COMMANDE #" + c.getIdCmde()));
+            Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14);
+            Paragraph title = new Paragraph("FACTURE RESTAURANT", boldFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            document.add(title);
+
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph("Commande #" + c.getIdCmde()));
             document.add(new Paragraph("Date: " + c.getDate()));
-            document.add(new Paragraph("Caissier: " + c.getNomUtil()));
-            document.add(new Paragraph("----------------------------"));
-            for (LigneCommande l : lignes) {
-                document.add(new Paragraph(
-                        l.getProduit().getNomPro() + " x" + l.getQteLig() + " : " + l.getMontant() + " FCFA"));
+            String caissierName = c.getNomUtil() != null ? c.getNomUtil() : "Inconnu";
+            document.add(new Paragraph("Caissier: " + caissierName));
+            document.add(new Paragraph(" "));
+
+            PdfPTable table = new PdfPTable(3);
+            table.setWidthPercentage(100);
+            try {
+                table.setWidths(new float[] { 5f, 2f, 3f });
+            } catch (Exception ignored) {
             }
-            document.add(new Paragraph("----------------------------"));
-            document.add(new Paragraph("TOTAL: " + c.getTotal() + " FCFA"));
+
+            table.addCell(new Phrase("Article", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
+            table.addCell(new Phrase("Qté", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
+            table.addCell(new Phrase("Montant", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
+
+            for (LigneCommande l : lignes) {
+                table.addCell(l.getProduit().getNomPro());
+                table.addCell(String.valueOf(l.getQteLig()));
+                table.addCell(l.getMontant() + " F");
+            }
+            document.add(table);
+
+            document.add(new Paragraph(" "));
+            Paragraph total = new Paragraph("TOTAL: " + c.getTotal() + " FCFA",
+                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14));
+            total.setAlignment(Element.ALIGN_RIGHT);
+            document.add(total);
+
+            document.add(new Paragraph(" "));
+            Paragraph footer = new Paragraph("Merci de votre visite !",
+                    FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10));
+            footer.setAlignment(Element.ALIGN_CENTER);
+            document.add(footer);
+
             document.close();
         } catch (Exception e) {
         }

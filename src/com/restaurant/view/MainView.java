@@ -116,7 +116,9 @@ public class MainView extends JFrame {
         panelContent.add(new StockView(), "Stocks");
         panelContent.add(new StatistiqueView(), "Statistiques");
         if (Role.ADMIN.equals(utilisateurConnecte.getRole())) {
-            panelContent.add(new AdminView(new com.restaurant.controller.AdminController()), "Employes");
+            com.restaurant.controller.AdminController adminCtrl = new com.restaurant.controller.AdminController();
+            adminCtrl.setUtilisateurConnecte(utilisateurConnecte);
+            panelContent.add(new AdminView(adminCtrl), "Employes");
             panelContent.add(new DatabaseView(new DatabaseController()), "Sauvegarde");
         }
 

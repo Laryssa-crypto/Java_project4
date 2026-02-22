@@ -276,4 +276,8 @@ public class LoginView extends JFrame {
             timer.start();
         }
     }
+
+    public void setCreerCompteVisible(boolean visible) {
+        btnCreerCompte.setVisible(visible);
+    }
 }
