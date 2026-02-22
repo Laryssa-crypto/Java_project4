@@ -42,6 +42,7 @@ public class MainView extends JFrame {
     private JLabel lblStockBadge;
     private static final int TIMEOUT_MS = 10 * 60 * 1000;
     private javax.swing.Timer inactivityTimer;
+    private AWTEventListener resetListener;
 
     public MainView(Utilisateur utilisateur) {
         this.utilisateurConnecte = utilisateur;
@@ -94,13 +95,26 @@ public class MainView extends JFrame {
         inactivityTimer.setRepeats(false);
         inactivityTimer.start();
 
-        AWTEventListener resetListener = event -> {
+        resetListener = event -> {
             if (inactivityTimer != null && !isDialogShowing) {
                 inactivityTimer.restart();
             }
         };
         Toolkit.getDefaultToolkit().addAWTEventListener(resetListener,
                 AWTEvent.MOUSE_EVENT_MASK | AWTEvent.KEY_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+    }
+
+    @Override
+    public void dispose() {
+        if (inactivityTimer != null) {
+            inactivityTimer.stop();
+            inactivityTimer = null;
+        }
+        if (resetListener != null) {
+            Toolkit.getDefaultToolkit().removeAWTEventListener(resetListener);
+            resetListener = null;
+        }
+        super.dispose();
     }
 
     private void initLayout() {

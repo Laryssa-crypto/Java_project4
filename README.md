@@ -64,9 +64,9 @@ com.restaurant/
 └── utils          → Classes utilitaires et support
     ├── DesignSystem.java        ← couleurs, polices, composants centralisés
     ├── ValidationUtils.java
+    ├── ValidationUtils.java
     ├── PasswordUtils.java
-    ├── DateUtils.java
-    └── DatabaseUpdater.java
+    └── DateUtils.java
 ```
 
 ## 🗄️ Base de données
@@ -162,7 +162,8 @@ CREATE TABLE UTILISATEUR (
    | Rôle | Login | Mot de passe |
    |---|---|---|
    | Admin | `admin` | `admin` |
-   | Caissier | `caissier` | `caissier` |
+
+> *Note : Le premier compte créé à l'initialisation de l'application prend automatiquement le rôle `ADMIN`.*
 
 ### Compilation et Exécution
 
@@ -181,6 +182,7 @@ Ou directement depuis **NetBeans** : `Run Project`.
 ### 🔐 Authentification & Sécurité
 - Connexion avec identifiant et mot de passe (haché BCrypt)
 - Rôles **Admin** et **Caissier** — accès aux modules selon le rôle
+- **Initialisation** : Le bouton de création de compte n'est visible que si la base de données est vide (installation initiale).
 - Déconnexion automatique après 10 minutes d'inactivité
 
 ### 🍽️ Gestion des produits et catégories
@@ -209,6 +211,7 @@ Ou directement depuis **NetBeans** : `Run Project`.
 
 ### 👤 Administration (Admin uniquement)
 - Création, modification, suppression de comptes employés
+- **Sécurité** : L'administrateur courant ne peut pas s'auto-supprimer pour éviter d'être bloqué hors du système.
 - Attribution des rôles
 - **Sauvegarde et Restauration SQL** : Export automatique (`mysqldump`) de l'intégralité de la base et réimportation depuis l'interface en cas de panne (Continuité métier).
 
@@ -229,9 +232,8 @@ Ou directement depuis **NetBeans** : `Run Project`.
 - ✅ Gestion spécifique des exceptions (SQLException, NumberFormatException…)
 - ✅ Design System centralisé (couleurs, polices, composants)
 - ✅ Performance : Multithreading via `SwingWorker` (UI non-bloquante)
-- ✅ Maintenance : Migration automatique du schéma (`DatabaseUpdater`)
 - ✅ Logging via Log4j2
-- ✅ Statistiques avancées avec graphiques et exports multi-formats (PDF, CSV)
+- ✅ Statistiques avancées avec graphiques et exports multi-formats (PDF formaté en tableaux compréhensifs, impressions papier réorganisées)
 - ✅ Import/Export CSV
 
 ## 🐛 Dépannage

@@ -54,6 +54,7 @@ MVT_STOCK  (id_mvt, id_pro→PRODUIT, type, quantite, date, motif, reference)
 3. le changement d'état de la commande (`EN_COURS → VALIDEE`).
 
 En cas d'erreur (stock insuffisant, etc.), l'ensemble est annulé (`rollback`).
+> **Note sur le calcul des seuils :** Pour synchroniser l'alerte de stock du Dashboard, la condition requise en SQL pour qu'un produit soit en "Alerte de Stock" (mais non en "Rupture") s'exécute ainsi : `WHERE p.stock_actu > 0 AND p.stock_actu <= p.seuil_alerte` (`ProduitDAO.getProduitsSousSeuilAlerte`).
 
 ---
 
@@ -82,14 +83,15 @@ Point unique pour toutes les couleurs (`PRIMARY`, `DANGER`, `WARNING`, …) et p
  
  ---
  
- ## Migration Automatique (`DatabaseUpdater.java`)
- 
- Au démarrage (`Main.java`), une classe utilitaire inspecte la structure de la base :
- - Elle tente de renommer les anciennes colonnes (ex: `nomUtil` → `nom_util`).
- - Elle ajoute les colonnes manquantes (ex: `reference` dans `MVT_STOCK`).
- - Elle assure que la version de la base est cohérente avec la version du code déployée.
- 
  ---
+ 
+ ## Sécurité
+ 
+ - Mots de passe hashés en **BCrypt** (via `UtilisateurDAO`).
+ - **Initialisation d'Application** : La création ouverte d'utilisateurs (`setCreerCompteVisible`) n'est autorisée par l'interface que si aucun utilisateur de la base de données n'existe (`UtilisateurDAO.findAll().isEmpty()`).
+ - **Protection Administrateur** : Au niveau `AdminController`, une sécurité vérifie si l'ID passé à la méthode `supprimerUtilisateur(id)` est le même que l'`utilisateurConnecte` (obtenu depuis `MainView`). Si c'est le cas, la suppression est bloquée.
+ - Rôles vérifiés à la connexion ; le `MainView` masque les boutons en fonction du rôle.
+ - Déconnexion automatique après 10 min d'inactivité (`javax.swing.Timer` + `AWTEventListener`).
  
  ## Sauvegarde & Restauration SQL
 
@@ -106,13 +108,7 @@ Log4j2 est configuré via `log4j2.xml`. Les logs sont écrits dans `logs/app.log
 
 ---
 
-## Sécurité
 
-- Mots de passe hashés en **BCrypt** (via `UtilisateurDAO`).
-- Rôles vérifiés à la connexion ; le `MainView` masque les boutons en fonction du rôle.
-- Déconnexion automatique après 10 min d'inactivité (`javax.swing.Timer` + `AWTEventListener`).
-
----
 
 ## Dépendances externes (`/lib`)
 

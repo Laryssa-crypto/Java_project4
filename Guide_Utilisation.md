@@ -2,7 +2,7 @@
 
 ## 1. Connexion
 
-Lancez l'application. La fenêtre de connexion s'affiche après l'écran de chargement.
+Lancez l'application. La fenêtre de connexion s'affiche après l'écran de chargement. Si vous installez le système pour la première fois, le bouton pour créer un compte apparaîtra; une fois le premier compte (administrateur par défaut) créé, la création libre se désactivera pour des raisons de sécurité.
 
 - Saisissez vos **identifiant** et **mot de passe**.
 - L'accès aux modules dépend de votre rôle :
@@ -25,7 +25,7 @@ Lancez l'application. La fenêtre de connexion s'affiche après l'écran de char
 ### Valider une commande
 1. Cliquez **Valider Commande**.
 2. Confirmez la validation.
-3. Un reçu client PDF est généré automatiquement et sauvegardé dans le dossier `Recus/` situé à la racine du logiciel.
+3. Un reçu client est généré. Il a été formaté avec précision et alignement pour intégrer l'en-tête, le type de commande et les noms complets des caissiers en bas. Le format d'impression est direct, et le PDF est enregistré dans le dossier `Recus/` avec une belle table `PdfPTable` propre à l'export.
 
 > **Note sur l'identité** : Le nom du caissier connecté est désormais automatiquement attribué à chaque commande. Ces informations sont essentielles pour les rapports de performance par employé disponibles dans l'onglet Statistiques.
 
@@ -72,7 +72,7 @@ Accessible via le bouton **Gestion Employés** de la sidebar.
 
 - Créer un employé, lui attribuer un rôle (**Admin** ou **Caissier**), définir son mot de passe.
 - Modifier les informations d'un employé existant.
-- Supprimer un compte (déconseillé si actif).
+- Supprimer un compte (déconseillé si actif). **Note:** Un administrateur connecté ne peut pas supprimer son propre compte (blocage de sécurité).
 
 ---
 
