@@ -71,8 +71,9 @@ Lancez l'application. La fenêtre de connexion s'affiche après l'écran de char
 Accessible via le bouton **Gestion Employés** de la sidebar.
 
 - Créer un employé, lui attribuer un rôle (**Admin** ou **Caissier**), définir son mot de passe.
-- Modifier les informations d'un employé existant.
+- Mettre à jour les informations d'un employé existant.
 - Supprimer un compte (déconseillé si actif). **Note:** Un administrateur connecté ne peut pas supprimer son propre compte (blocage de sécurité).
+- 🔍 **Traçabilité** : Toutes les actions d'administration, ainsi que les connexions et mouvements de stock, sont enregistrées historiquement pour l'audit du restaurant.
 
 ---
 
