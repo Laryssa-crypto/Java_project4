@@ -4,9 +4,7 @@ import com.restaurant.utils.DesignSystem;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Fenêtre de démarrage (Splash Screen) affichée pendant l'initialisation.
- */
+// Fenêtre de démarrage (Splash Screen) affichée pendant l'initialisation.
 public class SplashScreen extends JWindow {
 
     private JProgressBar progressBar;
@@ -52,11 +50,9 @@ public class SplashScreen extends JWindow {
         setLocationRelativeTo(null);
     }
 
-    /**
-     * Affiche le splash et anime la barre de 0 → 100 % en environ
-     * {@code durationMs} ms.
-     * Ferme automatiquement à la fin, puis exécute {@code onDone}.
-     */
+    // Affiche le splash et anime la barre de 0 → 100 % en environ {code durationMs}
+    // ms
+    // Ferme automatiquement à la fin, puis exécute {code onDone}
     public void afficherEtAnimer(int durationMs, Runnable onDone) {
         setVisible(true);
         toFront();

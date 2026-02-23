@@ -14,7 +14,7 @@ public class MouvementStockDAO {
 
     // Enregistre un nouveau mouvement de stock
     public boolean ajouter(MouvementStock mvt) {
-        String sql = "INSERT INTO MVT_STOCK (id_pro, TYPE, qte_stock, DATE, motif) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO MVT_STOCK (id_pro, TYPE, qte_stock, DATE, motif, reference) VALUES (?, ?, ?, ?, ?, ?)";
         Connection conn = ConnectionDB.getConnection();
         try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -23,11 +23,26 @@ public class MouvementStockDAO {
             pstmt.setInt(3, mvt.getQuantite());
             pstmt.setDate(4, Date.valueOf(mvt.getDate()));
             pstmt.setString(5, mvt.getMotif());
+            pstmt.setString(6, mvt.getReference());
 
             if (pstmt.executeUpdate() > 0) {
                 ResultSet rs = pstmt.getGeneratedKeys();
-                if (rs.next())
+                if (rs.next()) {
                     mvt.setId(rs.getInt(1));
+
+                    if (mvt.getReference() == null || mvt.getReference().isEmpty()) {
+                        String generatedRef = (mvt.getType() == TypeMouvement.ENTREE ? "FAC-ACH-" : "FAC-VEN-")
+                                + String.format("%04d", mvt.getId());
+                        mvt.setReference(generatedRef);
+                    }
+
+                    try (PreparedStatement updateStmt = conn
+                            .prepareStatement("UPDATE MVT_STOCK SET reference = ? WHERE id_stock = ?")) {
+                        updateStmt.setString(1, mvt.getReference());
+                        updateStmt.setInt(2, mvt.getId());
+                        updateStmt.executeUpdate();
+                    }
+                }
                 return true;
             }
         } catch (SQLException e) {
@@ -54,6 +69,7 @@ public class MouvementStockDAO {
                 mvt.setType(TypeMouvement.valueOf(rs.getString("TYPE")));
                 mvt.setDate(rs.getDate("DATE").toLocalDate());
                 mvt.setMotif(rs.getString("motif"));
+                mvt.setReference(rs.getString("reference"));
 
                 Produit p = new Produit();
                 p.setIdPro(rs.getInt("id_pro"));

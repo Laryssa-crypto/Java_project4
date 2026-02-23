@@ -1,7 +1,9 @@
 package com.restaurant.controller;
 
+import com.restaurant.dao.LogDAO;
 import com.restaurant.dao.MouvementStockDAO;
 import com.restaurant.dao.ProduitDAO;
+import com.restaurant.model.Log;
 import com.restaurant.model.MouvementStock;
 import com.restaurant.model.Produit;
 import com.restaurant.model.enums.TypeMouvement;
@@ -15,6 +17,7 @@ public class StockController {
 
     private final StockView view;
     private final StockService service;
+    private final LogDAO logDAO = new LogDAO();
 
     public StockController(StockView view) {
         this.view = view;
@@ -55,12 +58,17 @@ public class StockController {
                         "Seuil d'alerte", JOptionPane.WARNING_MESSAGE);
             }
 
+            // Log en BD : mouvement de stock
+            String typeLabel = mvt.getType() == TypeMouvement.ENTREE ? "Entrée" : "Sortie";
+            String actionDescription = typeLabel + " stock : " + qte + " x " + p.getNomPro();
+            logDAO.ajouter(new Log("stock", actionDescription)); 
+
             JOptionPane.showMessageDialog(view, "Mouvement enregistré avec succès !");
             view.resetChamps();
             view.actualiserHistorique();
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(view, e.getMessage(), "Erreur base de données", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(view, e.getMessage(), "Erreur SQL", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

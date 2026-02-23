@@ -1,5 +1,7 @@
 package com.restaurant.controller;
 
+import com.restaurant.dao.LogDAO;
+import com.restaurant.model.Log;
 import com.restaurant.dao.UtilisateurDAO;
 import com.restaurant.model.Utilisateur;
 import com.restaurant.model.enums.Role;
@@ -14,9 +16,16 @@ public class AdminController {
     private AdminView adminView;
     private UtilisateurDAO utilisateurDAO;
     private Utilisateur utilisateurConnecte;
+    private LogDAO logDAO;
 
     public AdminController() {
         this.utilisateurDAO = new UtilisateurDAO();
+        this.logDAO = new LogDAO();
+    }
+
+    // Méthode pour obtenir le nom de l'admin actuel si nul
+    private String getNomAdmin() {
+        return (utilisateurConnecte != null) ? utilisateurConnecte.getNomUtil() : "admin_system";
     }
 
     public void setView(AdminView view) {
@@ -49,6 +58,7 @@ public class AdminController {
             String hashedMdp = PasswordUtils.hashPassword(rawMdp);
             Utilisateur newUser = new Utilisateur(nom, hashedMdp, role);
             if (utilisateurDAO.create(newUser) > 0) {
+                logDAO.ajouter(new Log(getNomAdmin(), "Ajout de l'utilisateur : " + nom));
                 if (adminView != null) {
                     adminView.afficherMessage("Utilisateur ajouté avec succès.");
                     chargerUtilisateurs();
@@ -80,6 +90,7 @@ public class AdminController {
             }
 
             if (utilisateurDAO.update(u)) {
+                logDAO.ajouter(new Log(getNomAdmin(), "Modification de l'utilisateur : " + nom));
                 if (adminView != null) {
                     adminView.afficherMessage("Utilisateur modifié avec succès.");
                     chargerUtilisateurs();
@@ -100,6 +111,7 @@ public class AdminController {
         }
         try {
             if (utilisateurDAO.delete(idUtil)) {
+                logDAO.ajouter(new Log(getNomAdmin(), "Suppression de l'utilisateur ID : " + idUtil));
                 if (adminView != null) {
                     adminView.afficherMessage("Utilisateur supprimé.");
                     chargerUtilisateurs();

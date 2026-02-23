@@ -102,9 +102,10 @@ Le module de continuité système repose sur la classe `DatabaseBackupService`.
 
 ---
 
-## Logging
+## Logging et Traçabilité
 
-Log4j2 est configuré via `log4j2.xml`. Les logs sont écrits dans `logs/app.log`. Les accès non autorisés et les erreurs métier sont tracés.
+- **Logs Techniques** : Log4j2 est configuré via `log4j2.xml`. Les logs sont écrits dans `logs/app.log`. Les accès non autorisés et les erreurs métier sont tracés pour le débogage.
+- **Traçabilité Fonctionnelle (Audit)** : Les actions importantes des utilisateurs (connexion, création de compte, mouvements de stock, gestion des utilisateurs par les administrateurs) sont insérées directement en base de données dans la table `LOGS` via `LogDAO`. Ceci permet d'avoir un historique sécurisé des actions.
 
 ---
 

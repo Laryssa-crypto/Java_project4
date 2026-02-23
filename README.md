@@ -233,6 +233,10 @@ Ou directement depuis **NetBeans** : `Run Project`.
 - Attribution des rôles
 - **Sauvegarde et Restauration SQL** : Export automatique (`mysqldump`) de l'intégralité de la base et réimportation depuis l'interface en cas de panne (Continuité métier).
 
+### 🔍 Traçabilité & Historisation
+- Enregistrement des actions critiques (connexions, échecs, mouvements de stock, gestion des utilisateurs) en **base de données (`LOGS`)**.
+- Journalisation technique via **Log4j2** (fichiers logs) pour le suivi des erreurs système et le débogage.
+
 ## 🔧 Règles métier
 
 - Le prix de vente doit être strictement positif

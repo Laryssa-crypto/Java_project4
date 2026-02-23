@@ -1,5 +1,7 @@
 package com.restaurant.controller;
 
+import com.restaurant.dao.LogDAO;
+import com.restaurant.model.Log;
 import com.restaurant.model.Utilisateur;
 import com.restaurant.service.AuthService;
 import com.restaurant.view.LoginView;
@@ -12,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 public class LoginController {
 
     private static final Logger logger = LogManager.getLogger(LoginController.class);
+    private final LogDAO logDAO = new LogDAO();
 
     private LoginView loginView;
     private AuthService authService;
@@ -67,10 +70,14 @@ public class LoginController {
 
                 loginView.setVisible(false);
                 logger.info("Connexion réussie pour l'utilisateur: " + nomUtil);
+                // Log en BD : connexion réussie
+                logDAO.ajouter(new Log(nomUtil, "Connexion réussie"));
                 new MainView(utilisateurConnecte).setVisible(true);
                 return true;
             } else {
                 logger.warn("Échec de connexion (identifiants incorrects) pour l'utilisateur: " + nomUtil);
+                // Log en BD : échec de connexion
+                logDAO.ajouter(new Log(nomUtil, "Echec connexion"));
                 loginView.afficherErreur("Identifiants incorrects");
                 return false;
             }
@@ -104,6 +111,8 @@ public class LoginController {
 
             boolean success = authService.creerUtilisateur(nomUtil, motDePasse);
             if (success) {
+                // Log en BD : création de compte
+                logDAO.ajouter(new Log(nomUtil, "Création de compte"));
                 loginView.afficherMessage("Compte créé ! Vous pouvez vous connecter.");
                 return true;
             } else {

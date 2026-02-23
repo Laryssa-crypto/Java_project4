@@ -64,11 +64,20 @@ public class MouvementStock {
         this.motif = motif;
     }
 
+    private String reference;
+
     public String getReference() {
+        if (reference != null && !reference.isEmpty()) {
+            return reference;
+        }
         if (type == com.restaurant.model.enums.TypeMouvement.ENTREE) {
             return "FAC-ACH-" + String.format("%04d", id);
         } else {
             return "FAC-VEN-" + String.format("%04d", id);
         }
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
     }
 }
